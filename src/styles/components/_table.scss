@@ -1,0 +1,84 @@
+.table-header {
+  th {
+    color: $background-dark-neutral;
+    font-size: 1.25rem;
+    text-align: left;
+    border-bottom: 0;
+    padding: 1rem;
+  }
+}
+
+.table-body {
+  th,
+  td {
+    color: $text-primary;
+    font-size: 1.25rem;
+    min-width: 30rem;
+    border-bottom: 0;
+    text-transform: uppercase;
+    @include respond-to-lg {
+      min-width: fit-content;
+    }
+  }
+  th {
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    @include respond-to-lg {
+      font-size: 1rem;
+      min-width: 32rem;
+    }
+    .img {
+      width: 6rem;
+      height: 6rem;
+      position: relative;
+      border-radius: 100%;
+      margin-right: 1rem;
+      overflow: hidden;
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+  td {
+    text-align: center;
+    button {
+      min-width: fit-content;
+    }
+  }
+}
+
+.final-row {
+  border-top: solid 1px $background-dark-neutral;
+  text-align: end !important;
+  text-transform: capitalize !important;
+  .select-row {
+    color: $text-primary;
+    font-size: 1.25rem;
+    svg {
+      fill: $text-primary;
+    }
+    fieldset {
+      border: 0;
+    }
+  }
+}
+
+.status {
+  background-color: $transparent-primary-8;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: $primary-light;
+  text-transform: capitalize;
+}
+
+.disable {
+  path {
+    fill: $background-dark-neutral;
+  }
+}
