@@ -1,0 +1,134 @@
+.header {
+  width: 100%;
+  background-color: $background-dark-default;
+  position: fixed;
+  height: $nav;
+  z-index: 20;
+  top: 0;
+  @include respond-to-lg {
+    max-width: 30%;
+  }
+  .button-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: solid 1px $background-dark-neutral;
+    @include respond-to-lg {
+      border-bottom: 0;
+    }
+    .logo {
+      max-width: 5rem;
+      transition: ease-in-out 0.5s;
+      @include respond-to-lg {
+        &:hover {
+          transition: ease-in-out 0.5s;
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+  .nav {
+    width: 100%;
+    padding: 2rem;
+    z-index: 10;
+    position: absolute;
+    background-color: $background-dark-default;
+    top: calc(#{$nav} + 1px);
+    height: calc(100dvh - env(safe-area-inset-top) - #{$nav});
+    @include respond-to-lg {
+      top: $nav;
+    }
+    &.open {
+      left: 0;
+      transition: all ease-in-out 0.3s;
+    }
+
+    &.closed {
+      transition: all ease-in-out 0.3s;
+      left: -100%;
+      @include respond-to-lg {
+        left: 0;
+      }
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      padding: 1.5rem;
+      background-color: $transparent-grey-8;
+      margin-bottom: 5rem;
+      border-radius: 1rem;
+      .avatar {
+        border-radius: 100%;
+        width: 7rem;
+        margin-right: 3rem;
+      }
+      .admin {
+        color: $text-light-secondary;
+      }
+    }
+    .links {
+      .text {
+        color: $text-light-secondary;
+      }
+      .link {
+        min-height: 6rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        @include respond-to-lg {
+          &:hover {
+            p {
+              &:after {
+                width: 100%;
+                left: 0%;
+              }
+            }
+          }
+        }
+        &.active {
+          background: $transparent-primary-8;
+          p {
+            color: $primary-light;
+            &::after {
+              background-color: $primary-light;
+            }
+          }
+          .icon {
+            path {
+              fill: $primary-light;
+            }
+          }
+        }
+        .icon {
+          margin-right: 3rem;
+          path {
+            fill: $text-light-secondary;
+          }
+        }
+        &:not(:last-child) {
+          margin-bottom: 2rem;
+        }
+        p {
+          color: $text-light-secondary;
+          position: relative;
+          &::after {
+            content: "";
+            pointer-events: none;
+            bottom: -2px;
+            left: 50%;
+            position: absolute;
+            width: 0%;
+            height: 1px;
+            background-color: $text-light-secondary;
+            transition: ease-in-out 0.5s;
+            transition-property: width, left;
+          }
+        }
+      }
+    }
+  }
+}

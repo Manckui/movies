@@ -1,0 +1,29 @@
+@mixin respond-to-sm {
+  @media (min-width: $screen-sm) {
+    @content;
+  }
+}
+
+@mixin respond-to-md {
+  @media (min-width: $screen-md) {
+    @content;
+  }
+}
+
+@mixin respond-to-lg {
+  @media (min-width: $screen-lg) {
+    @content;
+  }
+}
+
+@mixin respond-to-xl {
+  @media (min-width: $screen-xl) {
+    @content;
+  }
+}
+
+@mixin respond-to-2xl {
+  @media (min-width: $screen-2xl) {
+    @content;
+  }
+}

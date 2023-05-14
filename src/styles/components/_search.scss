@@ -1,0 +1,64 @@
+.search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5rem;
+  @include respond-to-lg {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .input,
+  .select {
+    width: 100%;
+    margin-bottom: 3rem;
+    @include respond-to-lg {
+      margin-bottom: 0;
+    }
+    label {
+      color: $background-dark-neutral;
+    }
+  }
+  .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root:hover {
+    border-color: $background-dark-neutral;
+    fieldset {
+      border-color: $background-dark-neutral;
+    }
+  }
+  .css-jvf9a5-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:hover {
+    border-color: $background-dark-neutral;
+    fieldset {
+      border-color: $background-dark-neutral;
+    }
+  }
+  .button {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    width: 80%;
+    background-color: $primary-dark;
+    &:hover {
+      background-color: $primary-dark;
+    }
+    @include respond-to-lg {
+      width: 100%;
+      height: 100%;
+    }
+    .icon {
+      width: 2rem;
+      margin-right: 1rem;
+    }
+  }
+
+  .select {
+    position: relative;
+    svg {
+      fill: $background-dark-neutral;
+    }
+    #language-label {
+      top: 0.5rem;
+      font-size: 1.25rem;
+      background-color: $background-dark-default;
+      position: absolute;
+    }
+  }
+}
