@@ -3,6 +3,7 @@ import axios from "axios"
 import { useParams } from "react-router-dom"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
+import { Button, Rating, TextField } from "@mui/material"
 
 const SingleMovie = () => {
   const { id } = useParams()
@@ -15,10 +16,12 @@ const SingleMovie = () => {
       )
       setMovie(response.data)
     }
-
     fetchMovie()
   }, [id])
   console.log(movie)
+
+  const [review, setReview] = useState("")
+  const [stars, setStars] = useState(0)
 
   if (!movie) return null
 
@@ -49,10 +52,17 @@ const SingleMovie = () => {
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
           />
-          <span>
+          <span className="h-[30rem]">
             <h2 className="text-5xl mb-2">{movie.title}</h2>
-            <span className=" mb-8 block">
-              <p className=" text-xl uppercase">{movie.release_date}</p>
+            <span className=" mb-8  flex items-center">
+              <p className=" text-xl uppercase">
+                {movie.release_date}
+                <span className="lang">({movie.original_language})</span>{" "}
+              </p>
+              <p className="mx-2 text-xl ">|</p>
+              <p className=" text-xl">
+                {movie.genres.map((genre) => genre.name).join(", ")}
+              </p>
             </span>
             <div className="mb-8 flex items-center">
               <CircularProgressbar
@@ -68,12 +78,47 @@ const SingleMovie = () => {
                 <p className=" text-base uppercase">Points</p>
               </span>
             </div>
-
             <span>
               <p className="text-3xl mb-2">Descrizione</p>
-              <p className="text-xl mb-2 font-light">{movie.overview}</p>
+              <p className="text-lg mb-2 font-light">{movie.overview}</p>
             </span>
           </span>
+        </div>
+        <div className="box-white pr-10">
+          <p className=" text-2xl mb-4 font-bold">Review</p>
+          <span className=" flex flex-col">
+            <p className=" text-xl capitalize mb-2">vote (1-10)</p>
+            <Rating
+              className="mb-5"
+              name="simple-controlled"
+              value={stars}
+              max={10}
+              size="large"
+              onChange={(event, newValue) => {
+                setStars(newValue)
+              }}
+            />
+            <TextField
+              fullWidth
+              id="outlined-multiline-flexible"
+              label="Your Review"
+              multiline
+              rows={4}
+              maxRows={4}
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              variant="outlined"
+            />
+          </span>
+        </div>
+        <div className="px-8 flex items-center justify-between h-[8rem]">
+          <Button
+            href={movie.homepage}
+            target="_blanck"
+            className="button-website">
+            Visit website
+          </Button>
+          <Button className="button-review">Save Review</Button>
         </div>
       </div>
     </div>

@@ -1,0 +1,10 @@
+.text {
+  color: $text-light-primary;
+}
+
+.star {
+  label {
+    transform: scale(1.5);
+    margin-right: 2rem;
+  }
+}
