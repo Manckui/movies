@@ -20,6 +20,14 @@
       min-width: fit-content;
     }
   }
+  td {
+    &:nth-child(6),
+    &:first-of-type {
+      @include respond-to-lg {
+        min-width: 11rem;
+      }
+    }
+  }
   th {
     display: flex;
     align-items: center;
@@ -69,12 +77,24 @@
   }
 }
 
-.status {
+.status-reviewed {
   background-color: $transparent-primary-8;
   border-radius: 0.5rem;
   padding: 0.5rem;
   color: $primary-light;
   text-transform: capitalize;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.status-not {
+  background-color: $transparent-grey-16;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: $text-primary;
+  text-transform: capitalize;
+  font-size: 1rem;
+  width: 100%;
 }
 
 .disable {

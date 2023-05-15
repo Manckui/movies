@@ -29,7 +29,7 @@
     }
   }
   .container-movie {
-    min-height: 80vh;
+    min-height: 75vh;
     background-color: $text-primary;
     .backdrop {
       position: absolute;
@@ -51,5 +51,36 @@
   }
   .CircularProgressbar-trail {
     stroke: transparent !important;
+  }
+
+  .lang {
+    color: $background-dark-neutral;
+  }
+
+  .box-white {
+    position: absolute;
+    right: 0;
+    top: 45vh;
+    width: 58%;
+    color: $text-light-primary;
+    z-index: 30;
+  }
+
+  .button-website {
+    background-color: $info-main;
+    color: $text-primary;
+    &:hover {
+      background-color: $info-main;
+      color: $text-primary;
+    }
+  }
+
+  .button-review {
+    color: $text-primary;
+    background-color: $primary-dark;
+    &:hover {
+      color: $text-primary;
+      background-color: $primary-dark;
+    }
   }
 }

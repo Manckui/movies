@@ -17,6 +17,7 @@ import { ReactComponent as IconArrowL } from "../assets/icons/arrow-l.svg"
 import { ReactComponent as IconArrowR } from "../assets/icons/arrow-r.svg"
 import { ReactComponent as IconShow } from "../assets/icons/show.svg"
 import { ReactComponent as IconEdit } from "../assets/icons/edit.svg"
+import ReviewModal from "../components/ReviewModal"
 
 const StyledTableContainer = styled(TableContainer)({
   backgroundColor: "#212B36"
@@ -42,7 +43,22 @@ const MovieList = ({ movies, total_pages, setPage, page }) => {
   }
 
   const moviesToShow = movies ? movies : []
-  const [reviewedMovies, setReviewedMovies] = useState(true)
+  const [reviewedMovies, setReviewedMovies] = useState(false)
+
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+  const [currentMovie, setCurrentMovie] = useState(null)
+
+  const handleOpenReviewModal = (movie) => {
+    setCurrentMovie(movie)
+    setIsReviewModalOpen(true)
+  }
+  const handleCloseReviewModal = () => {
+    setIsReviewModalOpen(false)
+  }
+
+  const handleSaveReview = (movie, review, rating) => {
+    setIsReviewModalOpen(false)
+  }
 
   if (loading) {
     return <div>Caricamento in corso...</div>
@@ -84,14 +100,22 @@ const MovieList = ({ movies, total_pages, setPage, page }) => {
                 <TableCell align="right">{movie.vote_count}</TableCell>
                 <TableCell align="right">{movie.vote_average}</TableCell>
                 <TableCell align="right">
-                  <p className="status">
-                    {reviewedMovies ? "Reviewed" : "Not Reviewed"}
-                  </p>
+                  {reviewedMovies ? (
+                    <p className="status-reviewed">Reviewed</p>
+                  ) : (
+                    <p className="status-not">Not Reviewed</p>
+                  )}
                 </TableCell>
-                <TableCell align="right">
-                  <Link component={Link} to={`/movie/${movie.id}`}>
-                    {reviewedMovies ? <IconShow /> : <IconEdit />}
-                  </Link>
+                <TableCell align="right" className="button-tb">
+                  {reviewedMovies ? (
+                    <Link component={Link} to={`/movie/${movie.id}`}>
+                      <IconShow />
+                    </Link>
+                  ) : (
+                    <Button onClick={() => handleOpenReviewModal(movie)}>
+                      <IconEdit />
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -129,6 +153,12 @@ const MovieList = ({ movies, total_pages, setPage, page }) => {
           </TableRow>
         </TableBody>
       </Table>
+      <ReviewModal
+        open={isReviewModalOpen}
+        onClose={handleCloseReviewModal}
+        movie={currentMovie}
+        onSave={handleSaveReview}
+      />
     </StyledTableContainer>
   )
 }
