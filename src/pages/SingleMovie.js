@@ -4,10 +4,23 @@ import { useParams } from "react-router-dom"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { Button, Rating, TextField } from "@mui/material"
+import { useReviews } from "../hooks/useReviews"
 
 const SingleMovie = () => {
   const { id } = useParams()
+  const { addReview, getReviewForMovie } = useReviews()
   const [movie, setMovie] = useState(null)
+
+  const [review, setReview] = useState()
+  const [stars, setStars] = useState(0)
+
+  useEffect(() => {
+    const existingReview = getReviewForMovie(Number(id))
+    if (existingReview) {
+      setReview(existingReview.review)
+      setStars(existingReview.rating)
+    }
+  }, [id, getReviewForMovie])
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -18,10 +31,18 @@ const SingleMovie = () => {
     }
     fetchMovie()
   }, [id])
-  console.log(movie)
 
-  const [review, setReview] = useState("")
-  const [stars, setStars] = useState(0)
+  const handleInputReviewChange = (e) => {
+    setReview(e.target.value)
+  }
+
+  const handleInputStarsChange = (newValue) => {
+    setStars(newValue)
+  }
+
+  const saveReview = () => {
+    addReview(id, review, stars)
+  }
 
   if (!movie) return null
 
@@ -48,7 +69,7 @@ const SingleMovie = () => {
         </div>
         <div className="body p-10 relative z-20 flex">
           <img
-            className=" h-[60vh] rounded-3xl shadow-md mr-10"
+            className=" h-[65vh] rounded-3xl shadow-md mr-10"
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
           />
@@ -57,7 +78,9 @@ const SingleMovie = () => {
             <span className=" mb-8  flex items-center">
               <p className=" text-xl uppercase">
                 {movie.release_date}
-                <span className="lang">({movie.original_language})</span>{" "}
+                <span className="lang ml-2">
+                  ({movie.original_language})
+                </span>{" "}
               </p>
               <p className="mx-2 text-xl ">|</p>
               <p className=" text-xl">
@@ -94,9 +117,7 @@ const SingleMovie = () => {
               value={stars}
               max={10}
               size="large"
-              onChange={(event, newValue) => {
-                setStars(newValue)
-              }}
+              onChange={handleInputStarsChange}
             />
             <TextField
               fullWidth
@@ -104,9 +125,8 @@ const SingleMovie = () => {
               label="Your Review"
               multiline
               rows={4}
-              maxRows={4}
               value={review}
-              onChange={(e) => setReview(e.target.value)}
+              onChange={handleInputReviewChange}
               variant="outlined"
             />
           </span>
@@ -118,7 +138,9 @@ const SingleMovie = () => {
             className="button-website">
             Visit website
           </Button>
-          <Button className="button-review">Save Review</Button>
+          <Button className="button-review" onClick={saveReview}>
+            Save Review
+          </Button>
         </div>
       </div>
     </div>

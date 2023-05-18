@@ -18,6 +18,7 @@ import { ReactComponent as IconArrowR } from "../assets/icons/arrow-r.svg"
 import { ReactComponent as IconShow } from "../assets/icons/show.svg"
 import { ReactComponent as IconEdit } from "../assets/icons/edit.svg"
 import ReviewModal from "../components/ReviewModal"
+import { useReviews } from "../hooks/useReviews"
 
 const StyledTableContainer = styled(TableContainer)({
   backgroundColor: "#212B36"
@@ -31,22 +32,33 @@ const CustomSelect = styled(Select)({
   border: 0
 })
 
-const MovieList = ({ movies, total_pages, setPage, page }) => {
+const MovieList = ({
+  movies,
+  total_pages,
+  setPage,
+  page,
+  onReviewsCountUpdate
+}) => {
   const [resultsPerPage, setResultsPerPage] = useState(5)
   const loading = false
   const error = null
 
   const resultsOptions = Array.from({ length: 6 }, (_, i) => i + 5)
 
-  const handleChangeResultsPerPage = (event) => {
-    setResultsPerPage(event.target.value)
-  }
-
   const moviesToShow = movies ? movies : []
-  const [reviewedMovies, setReviewedMovies] = useState(false)
+  const [reviewedMovies, setReviewedMovies] = useState([])
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [currentMovie, setCurrentMovie] = useState(null)
+  const { reviews, addReview, getReviewForMovie } = useReviews()
+
+  useEffect(() => {
+    const reviews = localStorage.getItem("reviews")
+    const parsedReviews = reviews ? JSON.parse(reviews) : []
+
+    const reviewedMovieIds = parsedReviews.map((review) => review.id)
+    setReviewedMovies(reviewedMovieIds)
+  }, [movies])
 
   const handleOpenReviewModal = (movie) => {
     setCurrentMovie(movie)
@@ -56,9 +68,24 @@ const MovieList = ({ movies, total_pages, setPage, page }) => {
     setIsReviewModalOpen(false)
   }
 
-  const handleSaveReview = (movie, review, rating) => {
-    setIsReviewModalOpen(false)
+  const handleChangeResultsPerPage = (event) => {
+    setResultsPerPage(event.target.value)
   }
+
+  const handleSaveReview = (movie, review, rating) => {
+    addReview(movie.id, review, rating)
+      .then((newReviews) => {
+        const reviewedMovieIds = newReviews.map((review) => review.id)
+        setReviewedMovies(reviewedMovieIds)
+        onReviewsCountUpdate(newReviews.length)
+        setIsReviewModalOpen(false)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // localStorage.clear()
 
   if (loading) {
     return <div>Caricamento in corso...</div>
@@ -100,14 +127,14 @@ const MovieList = ({ movies, total_pages, setPage, page }) => {
                 <TableCell align="right">{movie.vote_count}</TableCell>
                 <TableCell align="right">{movie.vote_average}</TableCell>
                 <TableCell align="right">
-                  {reviewedMovies ? (
+                  {reviewedMovies.includes(movie.id) ? (
                     <p className="status-reviewed">Reviewed</p>
                   ) : (
                     <p className="status-not">Not Reviewed</p>
                   )}
                 </TableCell>
                 <TableCell align="right" className="button-tb">
-                  {reviewedMovies ? (
+                  {reviewedMovies.includes(movie.id) ? (
                     <Link component={Link} to={`/movie/${movie.id}`}>
                       <IconShow />
                     </Link>

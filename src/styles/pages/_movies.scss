@@ -4,9 +4,9 @@
   min-height: calc(100dvh - env(safe-area-inset-top));
   padding-bottom: 4rem;
   @include respond-to-lg {
-    max-width: 70%;
+    max-width: 80%;
     border-left: 1px dashed $background-dark-neutral;
-    margin-left: 35%;
+    margin-left: 20%;
     margin-top: 0;
   }
   .avatar {

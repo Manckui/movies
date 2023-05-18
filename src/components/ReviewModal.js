@@ -1,12 +1,5 @@
 import React, { useState } from "react"
-import {
-  Modal,
-  TextField,
-  Button,
-  Box,
-  Rating,
-  IconButton
-} from "@mui/material"
+import { Modal, TextField, Button, Box, Rating } from "@mui/material"
 
 const ReviewModal = ({ open, onClose, movie, onSave }) => {
   const [review, setReview] = useState("")
@@ -48,7 +41,9 @@ const ReviewModal = ({ open, onClose, movie, onSave }) => {
           sx={{ position: "absolute", right: 8, top: 8 }}>
           chiudi
         </Button>
-        {/* <h2 id="modal-modal-title">Recensione per {movie.original_title}</h2> */}
+        <h2 id="modal-modal-title">
+          Recensione per {movie ? movie.original_title : ""}
+        </h2>
         <p className="text text-lg uppercase">lascia un voto da 1 a 10</p>
         <div className="mb-10">
           <Rating
@@ -72,6 +67,7 @@ const ReviewModal = ({ open, onClose, movie, onSave }) => {
           onChange={(event) => setReview(event.target.value)}
         />
         <Button
+          className="button"
           variant="contained"
           color="primary"
           onClick={handleSave}

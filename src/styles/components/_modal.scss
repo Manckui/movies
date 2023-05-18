@@ -8,3 +8,10 @@
     margin-right: 2rem;
   }
 }
+
+.button {
+  background-color: $primary-dark;
+  &:hover {
+    background-color: $primary-main;
+  }
+}

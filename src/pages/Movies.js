@@ -14,6 +14,7 @@ function Movies() {
     baseUrl: `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`,
     page
   })
+  const [reviewsCount, setReviewsCount] = useState(0)
 
   const { data, error } = useFetchMovies(searchParams)
 
@@ -29,6 +30,16 @@ function Movies() {
       page
     }))
   }, [page])
+  useEffect(() => {
+    const reviews = localStorage.getItem("reviews")
+    if (reviews) {
+      setReviewsCount(JSON.parse(reviews).length)
+    }
+  }, [])
+
+  const handleReviewsCountUpdate = (newReviewsCount) => {
+    setReviewsCount(newReviewsCount)
+  }
 
   const onSearch = (newSearchParams, page = 1) => {
     setPage(page)
@@ -71,7 +82,7 @@ function Movies() {
             <IconMovieBig className=" absolute -right-10 top-[15%] icon" />
           </div>
           <div className="relative overflow-hidden eviews">
-            <p className=" text-5xl font-semibold mb-2">0</p>
+            <p className=" text-5xl font-semibold mb-2">{reviewsCount}</p>
             <p className=" text-2xl font-light capitalize">Reviews written</p>
             <IconEditBig className=" absolute -right-10 top-[6%] icon" />
           </div>
@@ -81,6 +92,7 @@ function Movies() {
           total_pages={data ? data.total_pages : 0}
           setPage={setPage}
           page={page}
+          onReviewsCountUpdate={handleReviewsCountUpdate}
         />
       </div>
     </div>

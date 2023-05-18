@@ -5,6 +5,10 @@
     text-align: left;
     border-bottom: 0;
     padding: 1rem;
+    text-align: center;
+    &:first-of-type {
+      text-align: left;
+    }
   }
 }
 
@@ -12,7 +16,7 @@
   th,
   td {
     color: $text-primary;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     min-width: 30rem;
     border-bottom: 0;
     text-transform: uppercase;
@@ -33,7 +37,7 @@
     align-items: center;
     text-transform: capitalize;
     @include respond-to-lg {
-      font-size: 1rem;
+      font-size: 1.4rem;
       min-width: 32rem;
     }
     .img {
@@ -83,7 +87,7 @@
   padding: 0.5rem;
   color: $primary-light;
   text-transform: capitalize;
-  font-size: 1rem;
+  font-size: 1.25rem;
   width: 100%;
 }
 
@@ -93,7 +97,7 @@
   padding: 0.5rem;
   color: $text-primary;
   text-transform: capitalize;
-  font-size: 1rem;
+  font-size: 1.25rem;
   width: 100%;
 }
 

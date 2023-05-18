@@ -1,7 +1,7 @@
 .single-movie {
-  max-width: 70%;
+  max-width: 80%;
   border-left: 1px dashed $background-dark-neutral;
-  margin-left: 35%;
+  margin-left: 20%;
   padding: 2rem;
   min-height: calc(100dvh - env(safe-area-inset-top));
   .movies-header {
@@ -61,7 +61,7 @@
     position: absolute;
     right: 0;
     top: 45vh;
-    width: 58%;
+    width: 63%;
     color: $text-light-primary;
     z-index: 30;
   }
