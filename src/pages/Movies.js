@@ -41,21 +41,24 @@ function Movies() {
     }))
   }, [page])
 
-  console.log(reviewsCount)
+  const [resultsPerPage, setResultsPerPage] = useState(10)
 
-  const onSearch = (newSearchParams, page = 1) => {
+  const onSearch = (newSearchParams, page = 1, resultsPerPage = 10) => {
     setPage(page)
+    setResultsPerPage(resultsPerPage)
     if (!newSearchParams) {
       setSearchParams({
         baseUrl: `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`,
-        page
+        page,
+        resultsPerPage
       })
       setFilteredMovies(allMovies)
     } else {
       setSearchParams({
         ...newSearchParams,
         baseUrl: `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}`,
-        page
+        page,
+        resultsPerPage
       })
     }
   }

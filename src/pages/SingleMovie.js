@@ -75,7 +75,7 @@ const SingleMovie = () => {
         </div>
         <div className="body p-10 relative z-20 flex">
           <img
-            className=" h-[65vh] rounded-3xl shadow-md mr-10"
+            className=" h-[45vh] rounded-3xl shadow-md mr-10"
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
           />
@@ -137,7 +137,7 @@ const SingleMovie = () => {
             />
           </span>
         </div>
-        <div className="px-8 flex items-center justify-between h-[8rem]">
+        <div className="px-8 flex items-center justify-between h-[8rem] absolute bottom-0 w-full">
           <Button
             href={movie.homepage}
             target="_blanck"
