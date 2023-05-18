@@ -8,20 +8,19 @@ import { useReviews } from "../hooks/useReviews"
 
 const SingleMovie = () => {
   const { id } = useParams()
-  const { addReview, getReviewForMovie } = useReviews()
+  const {
+    addReview,
+    updateCurrentReviewForMovie,
+    currentReview,
+    currentStars
+  } = useReviews()
   const [movie, setMovie] = useState(null)
-
-  const [review, setReview] = useState()
-  const [stars, setStars] = useState(0)
+  const [review, setReview] = useState(currentReview)
+  const [stars, setStars] = useState(currentStars)
 
   useEffect(() => {
-    const existingReview = getReviewForMovie(Number(id))
-    if (existingReview) {
-      setReview(existingReview.review)
-      setStars(existingReview.rating)
-    }
-  }, [id, getReviewForMovie])
-
+    updateCurrentReviewForMovie(id)
+  }, [id, updateCurrentReviewForMovie])
   useEffect(() => {
     const fetchMovie = async () => {
       const response = await axios.get(
@@ -32,11 +31,18 @@ const SingleMovie = () => {
     fetchMovie()
   }, [id])
 
-  const handleInputReviewChange = (e) => {
-    setReview(e.target.value)
+  useEffect(() => {
+    setReview(currentReview)
+    setStars(currentStars)
+  }, [currentReview, currentStars])
+
+  const handleReviewChange = (event) => {
+    console.log(event.target.value)
+    setReview(event.target.value)
   }
 
-  const handleInputStarsChange = (newValue) => {
+  const handleStarsChange = (event, newValue) => {
+    console.log(newValue)
     setStars(newValue)
   }
 
@@ -117,7 +123,7 @@ const SingleMovie = () => {
               value={stars}
               max={10}
               size="large"
-              onChange={handleInputStarsChange}
+              onChange={handleStarsChange}
             />
             <TextField
               fullWidth
@@ -126,7 +132,7 @@ const SingleMovie = () => {
               multiline
               rows={4}
               value={review}
-              onChange={handleInputReviewChange}
+              onChange={handleReviewChange}
               variant="outlined"
             />
           </span>

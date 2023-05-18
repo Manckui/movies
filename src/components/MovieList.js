@@ -85,7 +85,7 @@ const MovieList = ({
       })
   }
 
-  // localStorage.clear()
+  localStorage.clear()
 
   if (loading) {
     return <div>Caricamento in corso...</div>

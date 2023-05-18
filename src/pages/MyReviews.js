@@ -54,7 +54,7 @@ function MyReviews() {
         <div className="info-wrapper mb-10">
           <div className="total-reating relative overflow-hidden">
             <p className="text-5xl font-semibold mb-2">
-              {averageRating.toFixed(2)}
+              {averageRating.toFixed(1)}
             </p>
             <p className="text-2xl font-light capitalize">Average Rating</p>
             <IconMovieBig className="absolute -right-10 top-[15%] icon" />

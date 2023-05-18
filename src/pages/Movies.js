@@ -5,6 +5,7 @@ import Search from "../components/Search"
 import useFetchMovies from "../hooks/useFetchMovies"
 import { ReactComponent as IconMovieBig } from "../assets/icons/movie-big.svg"
 import { ReactComponent as IconEditBig } from "../assets/icons/edit-big.svg"
+import { useReviews } from "../hooks/useReviews"
 
 function Movies() {
   const [allMovies, setAllMovies] = useState([])
@@ -17,6 +18,15 @@ function Movies() {
   const [reviewsCount, setReviewsCount] = useState(0)
 
   const { data, error } = useFetchMovies(searchParams)
+  const { uniqueReviewedMovieIds } = useReviews()
+
+  useEffect(() => {
+    setReviewsCount(uniqueReviewedMovieIds.length)
+  }, [uniqueReviewedMovieIds])
+
+  const handleReviewsCountUpdate = (newReviewsCount) => {
+    setReviewsCount(newReviewsCount)
+  }
 
   useEffect(() => {
     if (data && !error) {
@@ -30,16 +40,8 @@ function Movies() {
       page
     }))
   }, [page])
-  useEffect(() => {
-    const reviews = localStorage.getItem("reviews")
-    if (reviews) {
-      setReviewsCount(JSON.parse(reviews).length)
-    }
-  }, [])
 
-  const handleReviewsCountUpdate = (newReviewsCount) => {
-    setReviewsCount(newReviewsCount)
-  }
+  console.log(reviewsCount)
 
   const onSearch = (newSearchParams, page = 1) => {
     setPage(page)

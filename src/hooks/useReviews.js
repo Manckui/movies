@@ -10,15 +10,23 @@ export const useReviews = () => {
     }
   }, [])
 
+  const [uniqueReviewedMovieIds, setUniqueReviewedMovieIds] = useState([])
+
+  useEffect(() => {
+    const uniqueIds = [...new Set(reviews.map((review) => review.id))]
+    setUniqueReviewedMovieIds(uniqueIds)
+  }, [reviews])
+
   const addReview = (id, review, rating) => {
     return new Promise((resolve, reject) => {
       try {
-        const newReviews = [...reviews]
-        const existingReviewIndex = newReviews.findIndex((r) => r.id === id)
-        if (existingReviewIndex > -1) {
+        const existingReviewIndex = reviews.findIndex((r) => r.id === id)
+        let newReviews = []
+        if (existingReviewIndex >= 0) {
+          newReviews = [...reviews]
           newReviews[existingReviewIndex] = { id, review, rating }
         } else {
-          newReviews.push({ id, review, rating })
+          newReviews = [...reviews, { id, review, rating }]
         }
         setReviews(newReviews)
         localStorage.setItem("reviews", JSON.stringify(newReviews))
@@ -29,9 +37,37 @@ export const useReviews = () => {
     })
   }
 
+  const [currentReview, setCurrentReview] = useState("")
+  const [currentStars, setCurrentStars] = useState(0)
+
+  const updateCurrentReviewForMovie = (movieId) => {
+    const existingReviewInState = reviews.find((r) => r.id === movieId)
+    if (existingReviewInState) {
+      setCurrentReview(existingReviewInState.review)
+      setCurrentStars(existingReviewInState.rating)
+    } else {
+      const existingReviewInLocalStorage = getReviewForMovie(Number(movieId))
+      if (existingReviewInLocalStorage) {
+        setCurrentReview(existingReviewInLocalStorage.review)
+        setCurrentStars(existingReviewInLocalStorage.rating)
+      } else {
+        setCurrentReview("")
+        setCurrentStars(0)
+      }
+    }
+  }
+
   const getReviewForMovie = (id) => {
     return reviews.find((r) => r.id === id)
   }
 
-  return { reviews, addReview, getReviewForMovie }
+  return {
+    addReview,
+    getReviewForMovie,
+    currentReview,
+    currentStars,
+    updateCurrentReviewForMovie,
+    reviews,
+    uniqueReviewedMovieIds
+  }
 }
