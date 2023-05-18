@@ -3,37 +3,21 @@ import avatar from "../assets/images/avatar.png"
 import { ReactComponent as IconMovieBig } from "../assets/icons/movie-big.svg"
 import { ReactComponent as IconEditBig } from "../assets/icons/edit-big.svg"
 import ReviewedMovieList from "../components/ReviewedMovieList"
+import { useReviews } from "../hooks/useReviews"
 
 function MyReviews() {
-  const [reviewedMovies, setReviewedMovies] = useState([])
+  const { reviews, uniqueReviewedMovieIds } = useReviews()
   const [averageRating, setAverageRating] = useState(0)
-  const [reviewsCount, setReviewsCount] = useState(0)
   const [movies, setMovies] = useState([])
 
   useEffect(() => {
-    const reviews = localStorage.getItem("reviews")
     if (reviews) {
-      const parsedReviews = JSON.parse(reviews)
-      const movieIds = parsedReviews.map((review) => review.id)
-      const moviesFromLocalStorage = movieIds.map((id) =>
-        localStorage.getItem(`movie_${id}`)
-      )
-      setMovies(moviesFromLocalStorage)
-    }
-  }, [])
-
-  useEffect(() => {
-    const reviews = localStorage.getItem("reviews")
-    if (reviews) {
-      const parsedReviews = JSON.parse(reviews)
-      setReviewedMovies(parsedReviews.map((review) => review.id))
-      const ratings = parsedReviews.map((review) => review.rating)
+      const ratings = reviews.map((review) => review.rating)
       const sum = ratings.reduce((total, rating) => total + rating, 0)
       const average = sum / ratings.length
       setAverageRating(average)
-      setReviewsCount(parsedReviews.length)
     }
-  }, [])
+  }, [reviews])
 
   // localStorage.clear()
 
@@ -54,18 +38,18 @@ function MyReviews() {
         <div className="info-wrapper mb-10">
           <div className="total-reating relative overflow-hidden">
             <p className="text-5xl font-semibold mb-2">
-              {averageRating.toFixed(1)}
+              {averageRating ? averageRating.toFixed(1) : 0}
             </p>
             <p className="text-2xl font-light capitalize">Average Rating</p>
             <IconMovieBig className="absolute -right-10 top-[15%] icon" />
           </div>
           <div className="relative overflow-hidden eviews">
-            <p className="text-5xl font-semibold mb-2">{reviewsCount}</p>
+            <p className="text-5xl font-semibold mb-2">{reviews.length}</p>
             <p className="text-2xl font-light capitalize">Reviews written</p>
             <IconEditBig className="absolute -right-10 top-[6%] icon" />
           </div>
         </div>
-        <ReviewedMovieList reviewedMovies={reviewedMovies} />
+        <ReviewedMovieList reviewedMovies={uniqueReviewedMovieIds} />
       </div>
     </div>
   )
