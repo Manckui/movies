@@ -31,6 +31,9 @@
   .container-movie {
     min-height: 60vh;
     background-color: $text-primary;
+    @include respond-to-lg {
+      min-height: 80vh;
+    }
     .backdrop {
       position: absolute;
       width: 100%;
@@ -64,6 +67,9 @@
     width: 63%;
     color: $text-light-primary;
     z-index: 30;
+    @include respond-to-lg {
+      top: 43vh;
+    }
   }
 
   .button-website {

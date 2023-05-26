@@ -11,6 +11,8 @@ import useFetchMovies from "../hooks/useFetchMovies"
 import { styled } from "@mui/system"
 import { ReactComponent as SearchIcon } from "../assets/icons/search.svg"
 import useFetchLanguages from "../hooks/useFetchLanguages"
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 
 const CustomTextField = styled(TextField)({
   "& .MuiInputBase-input": {
@@ -41,6 +43,15 @@ const CustomSelect = styled(Select)({
   }
 })
 
+const CustomDatePicker = styled(DatePicker)({
+  "& .MuiInputBase-input": {
+    color: "#919eab"
+  },
+  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#919eab"
+  }
+})
+
 const Search = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [year, setYear] = useState("")
@@ -59,9 +70,8 @@ const Search = ({ onSearch }) => {
   const handleSearchTermChange = (event) => {
     setSearchTerm(event.target.value)
   }
-
-  const handleYearChange = (event) => {
-    setYear(event.target.value)
+  const handleYearChange = (data) => {
+    setYear(data || null)
   }
 
   const handleLanguageChange = (event) => {
@@ -74,7 +84,9 @@ const Search = ({ onSearch }) => {
     } else {
       const searchParams = {
         baseUrl: `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}`,
-        searchTerm: searchTerm
+        searchTerm: searchTerm,
+        year: year,
+        language: language
       }
       onSearch(searchParams)
     }
@@ -89,13 +101,15 @@ const Search = ({ onSearch }) => {
         onChange={handleSearchTermChange}
         className="input"
       />
-      <CustomTextField
-        variant="outlined"
-        label="Year"
-        value={year}
-        onChange={handleYearChange}
-        className="input"
-      />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <CustomDatePicker
+          label="Year"
+          value={year instanceof Date ? year : null}
+          onChange={handleYearChange}
+          className="input"
+          views={["year"]}
+        />
+      </LocalizationProvider>
       <CustomFormControl className="select">
         <InputLabel id="language-label" shrink={true}>
           Language

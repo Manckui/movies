@@ -35,6 +35,7 @@ function Movies() {
     }
   }, [data, error])
   useEffect(() => {
+    console.log("Page has been updated:", page)
     setSearchParams((prevParams) => ({
       ...prevParams,
       page
@@ -46,21 +47,28 @@ function Movies() {
   const onSearch = (newSearchParams, page = 1, resultsPerPage = 10) => {
     setPage(page)
     setResultsPerPage(resultsPerPage)
-    if (!newSearchParams) {
-      setSearchParams({
-        baseUrl: `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`,
-        page,
-        resultsPerPage
-      })
+
+    let baseUrl = ""
+    if (!newSearchParams || !newSearchParams.searchTerm) {
+      baseUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`
       setFilteredMovies(allMovies)
     } else {
-      setSearchParams({
-        ...newSearchParams,
-        baseUrl: `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}`,
-        page,
-        resultsPerPage
-      })
+      const { searchTerm, year, language } = newSearchParams
+      const query = searchTerm ? searchTerm : " " // Here's the change
+      baseUrl = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${query}`
+      if (year) {
+        baseUrl += `&primary_release_year=${year}`
+      }
+      if (language) {
+        baseUrl += `&language=${language}`
+      }
     }
+
+    setSearchParams({
+      baseUrl,
+      page,
+      resultsPerPage
+    })
   }
 
   return (
@@ -81,7 +89,7 @@ function Movies() {
         <div className="info-wrapper mb-10">
           <div className="total-results relative overflow-hidden">
             <p className=" text-5xl font-semibold mb-2">
-              {data ? data.total_results : 0}
+              {data ? data.total_pages * 20 : 0}
             </p>
             <p className=" text-2xl font-light capitalize">total movie</p>
             <IconMovieBig className=" absolute -right-10 top-[15%] icon" />

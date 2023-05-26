@@ -13,6 +13,8 @@ const useFetchMovies = ({ baseUrl, searchTerm, page }) => {
     }
     url += `&page=${page}`
 
+    console.log(page)
+
     const fetchData = async () => {
       try {
         const res = await axios.get(url, {

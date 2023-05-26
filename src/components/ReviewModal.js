@@ -37,12 +37,17 @@ const ReviewModal = ({ open, onClose, movie, onSave }) => {
         }}>
         <Button
           aria-label="chiudi"
+          variant="outlined"
+          color="error"
           onClick={onClose}
           sx={{ position: "absolute", right: 8, top: 8 }}>
           chiudi
         </Button>
-        <h2 id="modal-modal-title">
-          Recensione per {movie ? movie.original_title : ""}
+        <h2 id="modal-modal-title" className=" text-base text uppercase">
+          Recensione per{" "}
+          <span className=" font-bold">
+            {movie ? movie.original_title : ""}
+          </span>
         </h2>
         <p className="text text-lg uppercase">lascia un voto da 1 a 10</p>
         <div className="mb-10">

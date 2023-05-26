@@ -165,11 +165,17 @@ const MovieList = ({
                 <span className="mr-4">
                   page {page} - {total_pages}
                 </span>
-                <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
+                <Button
+                  onClick={() => {
+                    setPage(page - 1)
+                  }}
+                  disabled={page === 1}>
                   <IconArrowL className={page === 1 ? "disable" : ""} />
                 </Button>
                 <Button
-                  onClick={() => setPage(page + 1)}
+                  onClick={() => {
+                    setPage(page + 1)
+                  }}
                   disabled={page >= total_pages}>
                   <IconArrowR
                     className={page >= total_pages ? "disable" : ""}

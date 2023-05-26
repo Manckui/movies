@@ -63,7 +63,7 @@ const SingleMovie = () => {
         </span>
       </div>
       <div className="container-movie shadow-md  relative rounded-3xl">
-        <div className=" absolute left-0 top-[-2px] h-[35rem] w-full rounded-3xl">
+        <div className=" absolute left-0 top-[-2px] h-[32rem] w-full rounded-3xl">
           <span className="backdrop rounded-3xl"></span>
           <span className=" relative  block h-full w-full rounded-3xl">
             <img
@@ -75,7 +75,7 @@ const SingleMovie = () => {
         </div>
         <div className="body p-10 relative z-20 flex">
           <img
-            className=" h-[45vh] rounded-3xl shadow-md mr-10"
+            className=" h-[45vh] rounded-3xl shadow-md mr-10 lg:h-[62vh]"
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
           />
