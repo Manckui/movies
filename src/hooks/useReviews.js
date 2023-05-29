@@ -20,13 +20,14 @@ export const useReviews = () => {
   const addReview = (id, review, rating) => {
     return new Promise((resolve, reject) => {
       try {
-        const existingReviewIndex = reviews.findIndex((r) => r.id === id)
+        const numId = Number(id)
+        const existingReviewIndex = reviews.findIndex((r) => r.id === numId)
         let newReviews = []
         if (existingReviewIndex >= 0) {
           newReviews = [...reviews]
-          newReviews[existingReviewIndex] = { id, review, rating }
+          newReviews[existingReviewIndex] = { id: numId, review, rating }
         } else {
-          newReviews = [...reviews, { id, review, rating }]
+          newReviews = [...reviews, { id: numId, review, rating }]
         }
         setReviews(newReviews)
         localStorage.setItem("reviews", JSON.stringify(newReviews))
