@@ -5,7 +5,7 @@
 .star {
   label {
     transform: scale(1.5);
-    margin-right: 2rem;
+    margin-right: 1rem;
   }
 }
 
@@ -14,4 +14,9 @@
   &:hover {
     background-color: $primary-main;
   }
+}
+
+.modal-content {
+  width: 90vw;
+  padding: 6rem 2rem;
 }

@@ -78,7 +78,7 @@ const SingleMovie = () => {
           <p className="text text-3xl">Movie Review</p>
         </span>
       </div>
-      <div className="container-movie shadow-md  relative rounded-3xl">
+      <div className="container-movie min-h-[80vh] shadow-md  relative rounded-3xl">
         <div className=" absolute left-0 top-[-2px] h-[32rem] w-full rounded-3xl">
           <span className="backdrop rounded-3xl"></span>
           <span className=" relative  block h-full w-full rounded-3xl">
@@ -89,13 +89,13 @@ const SingleMovie = () => {
             />
           </span>
         </div>
-        <div className="body p-10 relative z-20 flex">
+        <div className="body p-10 relative z-20 flex flex-col lg:flex-row">
           <img
-            className=" h-[45vh] rounded-3xl shadow-md mr-10 lg:h-[62vh]"
+            className="w-full lg:w-[50%] xl:w-[35%] mb-10 rounded-3xl shadow-md mr-10 h-[60vh] md:h-fit object-cover"
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
           />
-          <span className="h-[30rem]">
+          <span className=" lg:h-[30rem] box-content">
             <h2 className="text-5xl mb-2">{movie.title}</h2>
             <span className=" mb-8  flex items-center">
               <p className=" text-xl uppercase">
@@ -112,10 +112,10 @@ const SingleMovie = () => {
             <div className="mb-8 flex items-center">
               <CircularProgressbar
                 value={movie.vote_average * 10}
-                text={`${movie.vote_average}`}
+                text={`${movie.vote_average.toFixed(1)}`}
                 styles={buildStyles({
                   pathColor: `rgba(0, 171, 85, ${movie.vote_average / 10})`,
-                  textColor: "#fff"
+                  textColor: "#00ab55"
                 })}
               />
               <span className="ml-4 flex flex-col">
@@ -124,36 +124,36 @@ const SingleMovie = () => {
               </span>
             </div>
             <span>
-              <p className="text-3xl mb-2">Descrizione</p>
+              <p className="text-2xl mb-2 uppercase font-bold">Descrizione</p>
               <p className="text-lg mb-2 font-light">{movie.overview}</p>
             </span>
+            <div className="mt-10 lg:mt-20 xl:mt-36 box-reting">
+              <p className="text-2xl mb-6 font-bold uppercase">Review</p>
+              <span className=" flex flex-col">
+                <p className=" text-xl capitalize mb-2">vote (1-10)</p>
+                <Rating
+                  className="mb-14"
+                  name="simple-controlled"
+                  value={stars}
+                  max={10}
+                  size="large"
+                  onChange={handleStarsChange}
+                />
+                <TextField
+                  fullWidth
+                  id="outlined-multiline-flexible"
+                  label="Your Review"
+                  multiline
+                  rows={4}
+                  value={review}
+                  onChange={handleReviewChange}
+                  variant="outlined"
+                />
+              </span>
+            </div>
           </span>
         </div>
-        <div className="box-white pr-10">
-          <p className=" text-2xl mb-4 font-bold">Review</p>
-          <span className=" flex flex-col">
-            <p className=" text-xl capitalize mb-2">vote (1-10)</p>
-            <Rating
-              className="mb-5"
-              name="simple-controlled"
-              value={stars}
-              max={10}
-              size="large"
-              onChange={handleStarsChange}
-            />
-            <TextField
-              fullWidth
-              id="outlined-multiline-flexible"
-              label="Your Review"
-              multiline
-              rows={4}
-              value={review}
-              onChange={handleReviewChange}
-              variant="outlined"
-            />
-          </span>
-        </div>
-        <div className="px-8 flex items-center justify-between h-[8rem] absolute bottom-0 w-full">
+        <div className="p-8 flex items-center justify-between">
           <Button
             href={movie.homepage}
             target="_blanck"
