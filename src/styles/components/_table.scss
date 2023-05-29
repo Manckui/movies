@@ -106,3 +106,12 @@
     fill: $background-dark-neutral;
   }
 }
+
+.button-tb {
+  a {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -1,9 +1,14 @@
 .single-movie {
-  max-width: 75%;
-  border-left: 1px dashed $background-dark-neutral;
-  margin-left: 25%;
+  margin-top: 7rem;
   padding: 2rem;
   min-height: calc(100dvh - env(safe-area-inset-top));
+  padding-bottom: 4rem;
+  @include respond-to-lg {
+    max-width: 75%;
+    border-left: 1px dashed $background-dark-neutral;
+    margin-left: 25%;
+    margin-top: 0;
+  }
   .movies-header {
     margin-bottom: 5rem;
     .title {
@@ -29,11 +34,7 @@
     }
   }
   .container-movie {
-    min-height: 60vh;
     background-color: $text-primary;
-    @include respond-to-lg {
-      min-height: 80vh;
-    }
     .backdrop {
       position: absolute;
       width: 100%;
@@ -60,18 +61,6 @@
     color: $background-dark-neutral;
   }
 
-  .box-white {
-    position: absolute;
-    right: 0;
-    top: 35vh;
-    width: 63%;
-    color: $text-light-primary;
-    z-index: 30;
-    @include respond-to-lg {
-      top: 43vh;
-    }
-  }
-
   .button-website {
     background-color: $info-main;
     color: $text-primary;
@@ -87,6 +76,18 @@
     &:hover {
       color: $text-primary;
       background-color: $primary-dark;
+    }
+  }
+}
+
+.box-content {
+  color: $text-light-secondary;
+  @include respond-to-lg {
+    color: $text-primary;
+  }
+  .box-reting {
+    @include respond-to-lg {
+      color: $text-light-secondary;
     }
   }
 }

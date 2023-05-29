@@ -24,17 +24,16 @@ const ReviewModal = ({ open, onClose, movie, onSave }) => {
       }}>
       <Box
         sx={{
-          width: 500,
           bgcolor: "background.paper",
           border: "2px solid #000",
           boxShadow: 24,
-          p: 4,
           position: "fixed",
           zIndex: 100,
           display: "flex",
           flexDirection: "column",
           gap: 2
-        }}>
+        }}
+        className="modal-content">
         <Button
           aria-label="chiudi"
           variant="outlined"

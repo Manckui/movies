@@ -3,7 +3,7 @@
   background-color: $background-dark-default;
   position: fixed;
   height: $nav;
-  z-index: 20;
+  z-index: 50;
   top: 0;
   @include respond-to-lg {
     max-width: 25%;

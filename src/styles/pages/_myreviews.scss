@@ -1,10 +1,13 @@
 .my-reviews {
+  margin-top: 7rem;
   padding: 2rem;
   min-height: calc(100dvh - env(safe-area-inset-top));
-  max-width: 75%;
-  border-left: 1px dashed $background-dark-neutral;
-  margin-left: 25%;
+  padding-bottom: 4rem;
   @include respond-to-lg {
+    max-width: 75%;
+    border-left: 1px dashed $background-dark-neutral;
+    margin-left: 25%;
+    margin-top: 0;
   }
   .avatar {
     display: flex;
