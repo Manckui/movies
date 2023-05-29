@@ -5,6 +5,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { Button, Rating, TextField } from "@mui/material"
 import { useReviews } from "../hooks/useReviews"
+import MessageModal from "../components/MessageModal"
 
 const SingleMovie = () => {
   const { id } = useParams()
@@ -17,6 +18,8 @@ const SingleMovie = () => {
   const [movie, setMovie] = useState(null)
   const [review, setReview] = useState(currentReview)
   const [stars, setStars] = useState(currentStars)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState("")
 
   useEffect(() => {
     updateCurrentReviewForMovie(id)
@@ -46,8 +49,21 @@ const SingleMovie = () => {
     setStars(newValue)
   }
 
-  const saveReview = () => {
-    addReview(id, review, stars)
+  const saveReview = async () => {
+    try {
+      await addReview(id, review, stars)
+      setModalMessage("Recensione modificata con successo!")
+    } catch (error) {
+      setModalMessage(
+        "Si è verificato un errore durante la modifica della recensione."
+      )
+    }
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setModalMessage("")
   }
 
   if (!movie) return null
@@ -149,6 +165,11 @@ const SingleMovie = () => {
           </Button>
         </div>
       </div>
+      <MessageModal
+        isOpen={isModalOpen}
+        message={modalMessage}
+        onClose={closeModal}
+      />
     </div>
   )
 }
