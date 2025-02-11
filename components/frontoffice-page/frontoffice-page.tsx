@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material"
-import { BreadcrumbsCustom } from "../breadcrumb"
 import { IFrontOfficePageProps } from "./frontoffice-page.types"
-import theme from "@/app/theme/theme"
+import theme from "@/theme/theme"
+import { BreadcrumbsCustom } from "../breadcrumb"
 
 const FrontOfficePage = ({
   children,

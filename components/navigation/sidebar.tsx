@@ -6,19 +6,19 @@ import { ArrowBack, ArrowForward, Movie, Star } from "@mui/icons-material"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { REVIEW, ROOT } from "../../routes/paths"
 import {
   ContentWrapper,
   ProfileContainerStyle,
   SidebarStyles,
   ToggleButtonStyle
 } from "./sidebar.style"
+import { ROOT, REVIEW } from "@/routes"
 
 interface SidebarProps {
   children: ReactNode
 }
 
-export default function Sidebar({ children }: SidebarProps) {
+const Sidebar = ({ children }: SidebarProps) => {
   const theme = useTheme()
   const [open, setOpen] = useState(true)
   const pathname = usePathname()
@@ -136,3 +136,5 @@ export default function Sidebar({ children }: SidebarProps) {
     </>
   )
 }
+
+export { Sidebar }

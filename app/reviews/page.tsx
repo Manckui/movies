@@ -1,5 +1,5 @@
-import { FrontOfficePage } from "@/app/components/frontoffice-page"
-import { ROOT } from "@/app/routes/paths"
+import { FrontOfficePage } from "@/components"
+import { ROOT } from "@/routes/paths"
 import { Typography } from "@mui/material"
 
 export default function Home() {

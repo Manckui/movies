@@ -1,7 +1,8 @@
 import { ReactNode } from "react"
-import Sidebar from "./components/sidebar/sidebar"
-import ThemeRegistry from "./theme/ThemeRegistry"
+import ThemeRegistry from "../theme/ThemeRegistry"
 import "./globals.scss"
+import { Sidebar } from "@/components"
+
 interface LayoutProps {
   children: ReactNode
 }
