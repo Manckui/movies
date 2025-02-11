@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import Sidebar from "./components/sidebar/Sidebar"
+import Sidebar from "./components/sidebar/sidebar"
 import ThemeRegistry from "./theme/ThemeRegistry"
 import "./globals.scss"
 interface LayoutProps {
