@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material"
 
-export default function Home() {
+export default function Reviews() {
   return (
     <>
-      <Typography>home</Typography>
+      <Typography>reviews</Typography>
     </>
   )
 }
