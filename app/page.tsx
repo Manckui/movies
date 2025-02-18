@@ -1,13 +1,46 @@
-import { Typography } from "@mui/material"
-import { FrontOfficePage } from "@/components"
+"use client";
+import { FrontOfficePage, Table } from "@/components"
 import { ROOT } from "@/routes"
+import { moviesColumns } from "./columns"
+import { useTable } from "@/hooks";
+import { useEffect, useState } from "react";
+import { getMoviesList, IMovieDto } from "@/services";
+import { IPaginatedList } from "@/utils";
 
-export default function Home() {
+export default function Movies() {
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }]
+
+    const { tableProps, tableState
+     } =
+      useTable();
+  
+    const [movies, setMovies] = useState<IPaginatedList<IMovieDto>>();
+
+    
+  
+    useEffect(() => {
+      const fetchMovies = async () => {
+        try {
+          const res = await getMoviesList(tableState);
+          console.log('res', res)
+          setMovies(res);
+        } catch (error) {
+          console.error(error);
+        } finally {
+        }
+      };
+    
+      fetchMovies();
+    }, [tableState]);
+  
 
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Movies">
-      <Typography variant="h4">Tabbella</Typography>
+        <Table
+        columns={moviesColumns()}
+        data={movies}
+        {...tableProps}
+        />
     </FrontOfficePage>
   )
 }

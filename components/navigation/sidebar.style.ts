@@ -30,7 +30,6 @@ export const ToggleButtonStyle = styled(IconButton)(({ theme }) => ({
   borderRadius: "50%",
   "&:hover": { backgroundColor: theme.palette.grey[600] }
 }))
-
 export const ProfileContainerStyle = styled(Stack, {
   shouldForwardProp: (prop) => prop !== "open"
 })<{ open: boolean }>(({ theme, open }) => ({
@@ -51,7 +50,7 @@ export const ProfileContainerStyle = styled(Stack, {
 export const ContentWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== "open"
 })<{ open: boolean }>(({ theme, open }) => ({
-  paddingLeft: open ? 320 : 60,
+  paddingLeft: open ? 320 : 120,
   transition: "margin-left 0.3s ease-in-out",
   width: "100vw",
   minHeight: "100vh",

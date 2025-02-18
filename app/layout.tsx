@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
-import ThemeRegistry from "../theme/ThemeRegistry"
 import "./globals.scss"
 import { Sidebar } from "@/components"
+import ThemeRegistry from "@/theme/ThemeRegistry"
 
 interface LayoutProps {
   children: ReactNode
@@ -18,3 +18,4 @@ export default function Layout({ children }: LayoutProps) {
     </html>
   )
 }
+
