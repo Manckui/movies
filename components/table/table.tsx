@@ -7,7 +7,6 @@ import SortIcon from '@mui/icons-material/UnfoldMore'; // Icona di sorting
 import { Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { ITableProps } from './table.types';
-import { tablePageSizeOption } from '@/utils';
 
 
 const Table = (props: ITableProps) => {
@@ -15,17 +14,10 @@ const Table = (props: ITableProps) => {
     data,
     rows,
     rowCount,
-    paginationModel,
     showSortableColumns = true,
   } = props;
 
-
-  const pageSizeOptions = [
-    ...new Set([
-      ...tablePageSizeOption,
-      ...(paginationModel?.pageSize ? [paginationModel?.pageSize] : []),
-    ]),
-  ].sort((a, b) => a - b);
+  const pageSizeOptions = [5, 10, 15, 20, 50];
 
   const actualRows = data?.items || rows || [];
 

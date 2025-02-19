@@ -8,7 +8,7 @@ import { IMovieDto } from "./movies.types";
  */
 export const getMoviesList = async (params: QueryParamsObj): Promise<IPaginatedList<IMovieDto>> => {
   const page = params.page || 1;
-  const pageSize = params.pageSize || 10; // Default 10
+  const pageSize = params.pageSize || 5; // Default 10
   const moviesPerRequest = 20; // TMDB restituisce sempre 20 film per pagina
 
   // Quante pagine dobbiamo chiamare per ottenere abbastanza risultati?

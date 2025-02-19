@@ -56,6 +56,6 @@ export const ContentWrapper = styled(Box, {
   minHeight: "100vh",
   backgroundColor: theme.palette.background.default,
   paddingRight: 40,
-  paddingTop: 100,
+  paddingTop: 30,
   paddingBottom: 100
 }))

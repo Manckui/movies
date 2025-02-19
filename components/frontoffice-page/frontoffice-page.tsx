@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Avatar, Box, Stack, Typography } from "@mui/material"
 import { IFrontOfficePageProps } from "./frontoffice-page.types"
 import theme from "@/theme/theme"
 import { BreadcrumbsCustom } from "../breadcrumb"
@@ -12,6 +12,12 @@ const FrontOfficePage = ({
 
   return (
     <>
+      <Stack alignItems={'flex-end'} sx={{ mb: 5 }}>
+        <Avatar
+          src="/profile.jpg"
+          sx={{boxShadow: theme.shadows[5], width: 40, height: 40}}
+        />
+      </Stack>
       <Box sx={{ mb: 5 }}>
         <Typography
           variant="h4"

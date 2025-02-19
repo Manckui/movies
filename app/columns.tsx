@@ -14,7 +14,7 @@ export const moviesColumns = (): GridColDef[] => [
       ? `https://image.tmdb.org/t/p/w500${row.poster_path}`
       : "/placeholder.jpg";
       return (
-        <Stack direction={'row'} alignItems={'center'} gap={5} >
+        <Stack direction={'row'} alignItems={'center'} gap={5} sx={ { height: '100%'}}>
           <Image
             src={imageUrl}
             width={40}
