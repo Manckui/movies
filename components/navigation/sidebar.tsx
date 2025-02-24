@@ -34,9 +34,9 @@ const Sidebar = ({ children }: SidebarProps) => {
         ? theme.palette.primary.light
         : theme.palette.text.secondary,
     backgroundColor:
-      pathname === path
-        ? alpha(theme.palette.primary.main, 0.08)
-        : "transparent",
+    pathname === path && open 
+    ? alpha(theme.palette.primary.main, 0.08)
+    : "transparent",
     "&:hover": {
       backgroundColor:
         pathname === path
@@ -66,7 +66,7 @@ const Sidebar = ({ children }: SidebarProps) => {
           open={open}>
           <Avatar
             src="/profile.jpg"
-            sx={{ width: open ? 40 : 60, height: open ? 40 : 60 }}
+            sx={{ width: open ? 40 : 30, height: open ? 40 : 30 }}
           />
           {open && (
             <Box gap={0.5}>

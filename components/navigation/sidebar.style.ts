@@ -11,12 +11,12 @@ export const SidebarStyles = styled(Box, {
   position: "fixed",
   left: 0,
   top: 0,
-  transition: "width 0.3s",
+  transition: "all 0.3s",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   padding: theme.spacing(2),
-  borderRight: `2px dashed ${theme.palette.grey[500]}`
+  borderRight: `2px dashed ${theme.palette.grey[500]}`,
 }))
 
 export const ToggleButtonStyle = styled(IconButton)(({ theme }) => ({
@@ -51,11 +51,11 @@ export const ContentWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== "open"
 })<{ open: boolean }>(({ theme, open }) => ({
   paddingLeft: open ? 320 : 120,
-  transition: "margin-left 0.3s ease-in-out",
   width: "100vw",
   minHeight: "100vh",
   backgroundColor: theme.palette.background.default,
   paddingRight: 40,
   paddingTop: 30,
-  paddingBottom: 100
+  paddingBottom: 100,
+  transition: "all 0.3s",
 }))
