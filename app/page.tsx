@@ -4,7 +4,7 @@ import { ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
 import { useTable } from "@/hooks";
 import { useEffect, useState } from "react";
-import { getMoviesList, IMovieDto } from "@/services";
+import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
 import { useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ export default function Movies() {
 
   const { tableProps, tableState } = useTable();
 
-  const [movies, setMovies] = useState<IPaginatedList<IMovieDto>>();
+  const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
 
   useEffect(() => {
     const fetchMovies = async () => {
