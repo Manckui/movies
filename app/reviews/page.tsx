@@ -10,7 +10,7 @@ export default function Reviews() {
 
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Recensioni">
-      <Typography variant="h4">Tabbella movies recensioni</Typography>
+      <Typography variant="h4">Tabella movies recensioni</Typography>
     </FrontOfficePage>
   );
 }
