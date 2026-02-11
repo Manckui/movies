@@ -18,15 +18,18 @@ export default function Movies() {
   const { tableProps, tableState } = useTable();
 
   const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setIsLoading(true);
       try {
         const res = await getMoviesList(tableState);
         setMovies(res);
       } catch (error) {
         console.error(error);
       } finally {
+        setIsLoading(false);
       }
     };
 
@@ -38,6 +41,7 @@ export default function Movies() {
       <Table
         columns={moviesColumns(theme, router)}
         data={movies}
+        loading={isLoading}
         {...tableProps}
       />
     </FrontOfficePage>
