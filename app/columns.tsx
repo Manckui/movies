@@ -26,33 +26,51 @@ export const moviesColumns = (
         <Stack
           direction={"row"}
           alignItems={"center"}
-          gap={5}
+          gap={2}
           sx={{ height: "100%" }}
         >
           <Image
             src={imageUrl}
-            width={40}
-            height={40}
+            width={56}
+            height={56}
             alt={row.title}
             style={{
               borderRadius: "100%",
               objectFit: "cover",
-              width: 40,
-              height: 40,
-              minWidth: 40,
-              minHeight: 40,
+              width: 56,
+              height: 56,
+              minWidth: 56,
+              minHeight: 56,
             }}
             priority={false}
           />
-          <Typography variant="body1">{row.title}</Typography>
+          <Typography variant="subtitle1">{row.title}</Typography>
         </Stack>
       );
     },
   },
   { field: "release_date", headerName: "Release Date", flex: 1 },
   { field: "original_language", headerName: "Original Language", flex: 1 },
-  { field: "vote_count", headerName: "Total Reviews", flex: 1 },
-  { field: "vote_average", headerName: "Review Average", flex: 1 },
+  {
+    field: "vote_count",
+    headerName: "Total Reviews",
+    flex: 1,
+    type: "number",
+    align: "right",
+    headerAlign: "right",
+    headerClassName: "numeric-header",
+    cellClassName: "numeric-cell",
+  },
+  {
+    field: "vote_average",
+    headerName: "Review Average",
+    flex: 1,
+    type: "number",
+    align: "right",
+    headerAlign: "right",
+    headerClassName: "numeric-header",
+    cellClassName: "numeric-cell",
+  },
   {
     field: "status",
     headerName: "Status",
@@ -65,11 +83,11 @@ export const moviesColumns = (
             sx={{
               backgroundColor: alpha(theme.palette.grey[500], 0.08),
               color: theme.palette.text.primary,
-              padding: "4px 8px",
-              borderRadius: "4px",
+              padding: "6px 12px",
+              borderRadius: "6px",
               textAlign: "center",
               fontWeight: "bold",
-              fontSize: "12px",
+              fontSize: "14px",
               width: "fit-content",
             }}
           >
@@ -92,9 +110,13 @@ export const moviesColumns = (
       return [
         <Tooltip title="Dettagli" placement="top" key={`details-movies-${id}`}>
           <GridActionsCellItem
-            icon={<VisibilityIcon sx={{ color: theme.palette.text.primary }} />}
+            icon={
+              <VisibilityIcon
+                sx={{ color: theme.palette.text.primary, fontSize: "2.4rem" }}
+              />
+            }
             label="Dettagli"
-            sx={{ cursor: "default" }}
+            sx={{ cursor: "pointer" }}
             onClick={() => router.push(MOVIE_DETAILS(id))}
           />
         </Tooltip>,

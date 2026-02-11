@@ -41,10 +41,10 @@ const Table = (props: ITableProps) => {
           <Typography
             fontWeight="var(--unstable_DataGrid-headWeight)"
             variant="body2"
-            style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 17 }}
           >
             {params.colDef.headerName}
-            <SortIcon style={{ opacity: 0.4, fontSize: 16 }} />
+            <SortIcon style={{ opacity: 0.45, fontSize: 18 }} />
           </Typography>
         )
       : undefined,
@@ -77,6 +77,8 @@ const Table = (props: ITableProps) => {
         disableColumnMenu
         disableRowSelectionOnClick
         pageSizeOptions={pageSizeOptions}
+        rowHeight={72}
+        columnHeaderHeight={68}
         keepNonExistentRowsSelected
         slots={{
           loadingOverlay: TableRowsLoadingOverlay,

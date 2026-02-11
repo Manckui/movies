@@ -66,14 +66,16 @@ const Sidebar = ({ children }: SidebarProps) => {
           open={open}>
           <Avatar
             src="/profile.jpg"
-            sx={{ width: open ? 40 : 30, height: open ? 40 : 30 }}
+            sx={{ width: open ? 46 : 34, height: open ? 46 : 34 }}
           />
           {open && (
             <Box gap={0.5}>
-              <Typography variant="subtitle2">Stan Lee</Typography>
+              <Typography variant="subtitle1" sx={{ fontSize: "1.7rem" }}>
+                Stan Lee
+              </Typography>
               <Typography
                 variant="body1"
-                sx={{ color: theme.palette.text.disabled }}>
+                sx={{ color: theme.palette.text.disabled, fontSize: "1.5rem" }}>
                 Admin
               </Typography>
             </Box>
@@ -87,6 +89,8 @@ const Sidebar = ({ children }: SidebarProps) => {
               variant="body2"
               sx={{
                 color: theme.palette.text.secondary,
+                fontSize: "1.3rem",
+                fontWeight: 700,
                 px: "10px",
                 mb: 2,
                 textTransform: "uppercase"
@@ -103,22 +107,26 @@ const Sidebar = ({ children }: SidebarProps) => {
                 justifyContent={open ? "" : "center"}
                 sx={{
                   px: "10px",
-                  height: "48px",
+                  height: "54px",
                   borderRadius: "8px",
                   ...getNavItemStyle(path)
                 }}
                 gap={2}>
                 <Icon
                   sx={{
-                    width: open ? 24 : 34,
-                    height: open ? 24 : 34,
+                    width: open ? 28 : 36,
+                    height: open ? 28 : 36,
                     color: getNavItemStyle(path).color
                   }}
                 />
                 {open && (
                   <Typography
-                    variant="body2"
-                    sx={{ color: getNavItemStyle(path).color }}>
+                    variant="body1"
+                    sx={{
+                      color: getNavItemStyle(path).color,
+                      fontSize: "1.6rem",
+                      fontWeight: 600
+                    }}>
                     {name}
                   </Typography>
                 )}
