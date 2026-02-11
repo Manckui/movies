@@ -26,9 +26,14 @@ class ApiClient {
     }
 
     const url = new URL(`${this.baseUrl}${endpoint}`);
-    url.search = new URLSearchParams(
-      { api_key: API_KEY, ...params } as Record<string, string>
-    ).toString();
+    const mergedSearchParams = new URLSearchParams(url.search);
+    mergedSearchParams.set("api_key", API_KEY);
+
+    Object.entries(params).forEach(([key, value]) => {
+      mergedSearchParams.set(key, String(value));
+    });
+
+    url.search = mergedSearchParams.toString();
 
     const options: RequestInit = {
       method,

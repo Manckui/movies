@@ -1,6 +1,6 @@
 // api/tmdb.ts
-import { API, IPaginatedList, obj2qstring, QueryParamsObj } from "@/utils";
-import { IMovie } from "./movies.types";
+import { API, IPaginatedList, QueryParamsObj } from "@/utils";
+import { IMovie, IMovieDto } from "./movies.types";
 
 /**
  * Ottiene la lista di film con paginazione e supporto per `pageSize` personalizzato.
@@ -10,31 +10,60 @@ export const getMoviesList = async (
   params: QueryParamsObj
 ): Promise<IPaginatedList<IMovie>> => {
   const page = params.page || 1;
-  const pageSize = params.pageSize || 5; // Default 10
-  const moviesPerRequest = 30; // TMDB restituisce sempre 20 film per pagina
+  const pageSize = params.pageSize || 10;
+  const moviesPerRequest = 20;
+  const title = String(params.title || "").trim();
+  const year =
+    params.year && params.year !== "all" ? String(params.year).trim() : "";
+  const language =
+    params.language && params.language !== "all"
+      ? String(params.language).trim()
+      : "";
+  const hasTitleFilter = title.length > 0;
 
   // Quante pagine dobbiamo chiamare per ottenere abbastanza risultati?
   const pagesToFetch = Math.ceil(pageSize / moviesPerRequest);
 
   let allResults: IMovie[] = [];
+  let totalCount = 0;
 
   for (let i = 0; i < pagesToFetch; i++) {
-    const queryParams = obj2qstring({ page: page + i });
-    const res = await API.get<{
-      page: number;
-      results: IMovie[];
-      total_pages: number;
-      total_results: number;
-    }>(`/movie/popular${queryParams}`);
+    const queryParams = hasTitleFilter
+      ? {
+          page: page + i,
+          query: title,
+          include_adult: "false",
+          ...(year ? { primary_release_year: year } : {}),
+        }
+      : {
+          page: page + i,
+          include_adult: "false",
+          sort_by: "popularity.desc",
+          ...(year ? { primary_release_year: year } : {}),
+          ...(language ? { with_original_language: language } : {}),
+        };
 
-    allResults = [...allResults, ...res.results];
+    const endpoint = hasTitleFilter ? "/search/movie" : "/discover/movie";
+    const res = await API.get<IMovieDto>(endpoint, queryParams);
+    let filteredResults = res.results;
+
+    if (hasTitleFilter && language) {
+      filteredResults = filteredResults.filter(
+        (movie) => movie.original_language === language
+      );
+    }
+
+    allResults = [...allResults, ...filteredResults];
+    totalCount = res.total_results;
 
     // Se abbiamo abbastanza risultati, fermiamoci
     if (allResults.length >= pageSize) break;
   }
 
+  const hasPostFilter = hasTitleFilter && !!language;
+
   return {
-    count: allResults.length, // Contiamo solo i risultati effettivi caricati
-    items: allResults.slice(0, pageSize), // Prendiamo esattamente `pageSize`
+    count: hasPostFilter ? allResults.length : totalCount || allResults.length,
+    items: allResults.slice(0, pageSize),
   };
 };
