@@ -30,10 +30,18 @@ export default function Details() {
   const [movie, setMovie] = useState<IMovieDetails>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const { addReview } = useReviewsStore();
+  const { reviews, addReview } = useReviewsStore();
   const reviewMethods = useForm<IReviewFormValues>({
     defaultValues: { rating: 0, text: "" },
   });
+
+  useEffect(() => {
+    const existingReview = reviews.find((r) => r.movieId === Number(id));
+    reviewMethods.reset({
+      rating: existingReview?.rating ?? 0,
+      text: existingReview?.text ?? "",
+    });
+  }, [id, reviews, reviewMethods]);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {

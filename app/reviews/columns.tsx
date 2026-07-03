@@ -3,18 +3,15 @@ import {
   GridColDef,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { alpha, Box, Stack, Theme, Tooltip, Typography } from "@mui/material";
+import { Stack, Theme, Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
 import { MOVIE_DETAILS } from "@/routes";
 import { useRouter } from "next/navigation";
-import { IReview } from "@/hooks";
 
-export const moviesColumns = (
+export const reviewsColumns = (
   theme: Theme,
-  router: ReturnType<typeof useRouter>,
-  reviews: IReview[] = []
+  router: ReturnType<typeof useRouter>
 ): GridColDef[] => [
   {
     field: "title",
@@ -81,10 +78,7 @@ export const moviesColumns = (
     headerAlign: "left",
     sortable: false,
     filterable: false,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      return review ? 1 : 0;
-    },
+    renderCell: () => 1, /// todo da modificare con il numero delle recensioni del film appena c'è back di tutta app
   },
   {
     field: "app_review_average",
@@ -95,41 +89,15 @@ export const moviesColumns = (
     headerAlign: "left",
     sortable: false,
     filterable: false,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      return review ? review.rating : "-";
-    },
+    renderCell: (params) => params.row.myRating, /// todo da modificare con la media delle recensioni del film appena c'è back di tutta app
   },
   {
-    field: "status",
-    headerName: "Stato",
+    field: "myRating",
+    headerName: "Il Mio Voto",
     flex: 1,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      const status = review ? "Recensito" : "Non recensito";
-      return (
-        <Stack justifyContent={"center"} sx={{ height: "100%", width: "100%" }}>
-          <Box
-            sx={{
-              backgroundColor: review
-                ? alpha(theme.palette.success.main, 0.3)
-                : alpha(theme.palette.grey[500], 0.08),
-              color: review
-                ? theme.palette.success.light
-                : theme.palette.text.primary,
-              padding: "6px 12px",
-              borderRadius: "6px",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "14px",
-              width: "fit-content",
-            }}
-          >
-            {status}
-          </Box>
-        </Stack>
-      );
-    },
+    type: "number",
+    align: "left",
+    headerAlign: "left",
   },
   {
     field: "config",
@@ -140,10 +108,9 @@ export const moviesColumns = (
     minWidth: 120,
     getActions: (params: GridRowParams) => {
       const id = params.row.id;
-      const hasReview = reviews.some((r) => r.movieId === id);
 
-      const actions = [
-        <Tooltip title="Dettagli" placement="top" key={`details-movies-${id}`}>
+      return [
+        <Tooltip title="Dettagli" placement="top" key={`details-review-${id}`}>
           <GridActionsCellItem
             icon={
               <VisibilityIcon
@@ -156,29 +123,6 @@ export const moviesColumns = (
           />
         </Tooltip>,
       ];
-
-      if (hasReview) {
-        actions.push(
-          <Tooltip
-            title="Modifica Recensione"
-            placement="top"
-            key={`edit-review-${id}`}
-          >
-            <GridActionsCellItem
-              icon={
-                <EditIcon
-                  sx={{ color: theme.palette.text.primary, fontSize: "2.4rem" }}
-                />
-              }
-              label="Modifica Recensione"
-              sx={{ cursor: "pointer" }}
-              onClick={() => router.push(MOVIE_DETAILS(id))}
-            />
-          </Tooltip>
-        );
-      }
-
-      return actions;
     },
   },
 ];

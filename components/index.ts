@@ -3,3 +3,4 @@ export * from "./breadcrumb"
 export * from "./frontoffice-page"
 export * from './table'
 export * from './form'
+export * from './metric-card'

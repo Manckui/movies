@@ -66,17 +66,27 @@ export default function DataGridOverrides(theme: Theme): Components {
             fontSize: "2.2rem",
           },
           ["& .numeric-cell"]: {
-            justifyContent: "flex-end",
+            justifyContent: "flex-start",
             fontVariantNumeric: "tabular-nums",
             fontFeatureSettings: '"tnum" 1',
           },
           ["& .numeric-header .MuiDataGrid-columnHeaderTitleContainer"]: {
-            justifyContent: "flex-end",
+            justifyContent: "flex-start",
           },
           ["& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows"]:
             {
               fontSize: "15px",
             },
+          ["& .MuiTablePagination-select"]: {
+            display: "flex",
+            alignItems: "center",
+          },
+          ["& .MuiTablePagination-selectIcon"]: {
+            position: "absolute",
+            top: "50%",
+            right: 0,
+            transform: "translateY(-50%)",
+          },
         },
         toolbarContainer: {
           gap: 10,

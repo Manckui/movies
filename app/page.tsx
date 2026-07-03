@@ -1,28 +1,37 @@
 "use client";
-import { FrontOfficePage, MoviesTableFilters, Table } from "@/components";
+import {
+  FrontOfficePage,
+  MetricCard,
+  MoviesTableFilters,
+  Table,
+} from "@/components";
 import { ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
-import { useTable } from "@/hooks";
+import { useReviewsStore, useTable } from "@/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
-import { useTheme } from "@mui/material";
+import { Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { IMoviesTableFilters } from "@/components/table/filters";
+import EditIcon from "@mui/icons-material/Edit";
+import MovieIcon from "@mui/icons-material/Movie";
 
 export default function Movies() {
   const theme = useTheme();
   const router = useRouter();
+  const { reviews } = useReviewsStore();
 
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
 
-  const { tableProps, tableState, setTableState } = useTable<IMoviesTableFilters>({
-    page: 1,
-    pageSize: 10,
-    title: "",
-    year: "all",
-    language: "all",
-  });
+  const { tableProps, tableState, setTableState } =
+    useTable<IMoviesTableFilters>({
+      page: 1,
+      pageSize: 10,
+      title: "",
+      year: "all",
+      language: "all",
+    });
 
   const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -81,8 +90,22 @@ export default function Movies() {
         onChange={handleFiltersChange}
         titleOptions={titleOptions}
       />
+      <Stack direction="row" gap={2} sx={{ mb: 3 }}>
+        <MetricCard
+          value={reviews.length}
+          label="Recensioni Scritte"
+          color={theme.palette.info.dark}
+          icon={EditIcon}
+        />
+        <MetricCard
+          value={movies?.count ?? 0}
+          label="Totale Film"
+          color={theme.palette.success.dark}
+          icon={MovieIcon}
+        />
+      </Stack>
       <Table
-        columns={moviesColumns(theme, router)}
+        columns={moviesColumns(theme, router, reviews)}
         data={movies}
         loading={isLoading}
         {...tableProps}
