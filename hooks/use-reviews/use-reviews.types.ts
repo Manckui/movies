@@ -1,5 +1,4 @@
 export interface IReview {
-  id: number;
   movieId: number;
   text: string;
   rating: number;

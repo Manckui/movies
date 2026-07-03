@@ -1,11 +1,12 @@
 // api/tmdb.ts
 import { API, IPaginatedList, QueryParamsObj } from "@/utils";
-import { IMovie, IMovieDto } from "./movies.types";
+import { IMovie, IMovieDetails, IMovieDto } from "./movies.types";
 
-/**
- * Ottiene la lista di film con paginazione e supporto per `pageSize` personalizzato.
- * TMDB supporta massimo 20 film per pagina, quindi per `pageSize > 20` bisogna fare più richieste.
- */
+export const getMovieDetails = async (id: number): Promise<IMovieDetails> => {
+  const res = await API.get<IMovieDetails>(`/movie/${id}`);
+  return res;
+};
+
 export const getMoviesList = async (
   params: QueryParamsObj
 ): Promise<IPaginatedList<IMovie>> => {
@@ -21,7 +22,6 @@ export const getMoviesList = async (
       : "";
   const hasTitleFilter = title.length > 0;
 
-  // Quante pagine dobbiamo chiamare per ottenere abbastanza risultati?
   const pagesToFetch = Math.ceil(pageSize / moviesPerRequest);
 
   let allResults: IMovie[] = [];
@@ -56,7 +56,6 @@ export const getMoviesList = async (
     allResults = [...allResults, ...filteredResults];
     totalCount = res.total_results;
 
-    // Se abbiamo abbastanza risultati, fermiamoci
     if (allResults.length >= pageSize) break;
   }
 

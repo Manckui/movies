@@ -89,6 +89,25 @@ export default function FormControlsOverrides(theme: Theme): Components {
       styleOverrides: {
         root: {
           width: "100%",
+          "& .MuiFormControl-root": {
+            border: `1px solid ${BORDER_COLOR}`,
+            borderRadius: 12,
+          },
+          "&:hover .MuiFormControl-root": {
+            borderColor: alpha("#919EAB", 0.46),
+          },
+          "&:has(.Mui-focused) .MuiFormControl-root": {
+            borderColor: alpha("#919EAB", 0.58),
+          },
+          "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
           "& .MuiOutlinedInput-root": {
             minHeight: 56,
             borderRadius: 12,
@@ -119,7 +138,7 @@ export default function FormControlsOverrides(theme: Theme): Components {
           '&[aria-selected="true"]': {
             backgroundColor: alpha(theme.palette.primary.main, 0.2),
           },
-          '&.Mui-focused': {
+          "&.Mui-focused": {
             backgroundColor: alpha(theme.palette.primary.main, 0.12),
           },
         },
@@ -135,10 +154,10 @@ export default function FormControlsOverrides(theme: Theme): Components {
       styleOverrides: {
         root: {
           color: theme.palette.text.primary,
-          '&.Mui-selected': {
+          "&.Mui-selected": {
             backgroundColor: alpha(theme.palette.primary.main, 0.2),
           },
-          '&.Mui-selected:hover': {
+          "&.Mui-selected:hover": {
             backgroundColor: alpha(theme.palette.primary.main, 0.28),
           },
         },

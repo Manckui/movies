@@ -3,7 +3,7 @@ const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
 const BASE_URL = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 /**
  * Classe generica per effettuare richieste API
@@ -19,10 +19,12 @@ class ApiClient {
     endpoint: string,
     method: HttpMethod,
     params: Record<string, string | number> = {},
-    body?: unknown // 🟢 Sostituiamo `any` con `unknown`
+    body?: unknown
   ): Promise<T> {
     if (!API_KEY || !ACCESS_TOKEN || !BASE_URL) {
-      throw new Error('Le variabili di ambiente non sono impostate correttamente.');
+      throw new Error(
+        "Le variabili di ambiente non sono impostate correttamente."
+      );
     }
 
     const url = new URL(`${this.baseUrl}${endpoint}`);
@@ -39,7 +41,7 @@ class ApiClient {
       method,
       headers: {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: body ? JSON.stringify(body) : undefined,
     };
@@ -51,25 +53,31 @@ class ApiClient {
       }
       return (await response.json()) as T;
     } catch (error) {
-      console.error('Errore API:', error);
+      console.error("Errore API:", error);
       throw error;
     }
   }
 
-  get<T>(endpoint: string, params?: Record<string, string | number>): Promise<T> {
-    return this.request<T>(endpoint, 'GET', params);
+  get<T>(
+    endpoint: string,
+    params?: Record<string, string | number>
+  ): Promise<T> {
+    return this.request<T>(endpoint, "GET", params);
   }
 
   post<T>(endpoint: string, body?: unknown): Promise<T> {
-    return this.request<T>(endpoint, 'POST', {}, body);
+    return this.request<T>(endpoint, "POST", {}, body);
   }
 
   put<T>(endpoint: string, body?: unknown): Promise<T> {
-    return this.request<T>(endpoint, 'PUT', {}, body);
+    return this.request<T>(endpoint, "PUT", {}, body);
   }
 
-  delete<T>(endpoint: string, params?: Record<string, string | number>): Promise<T> {
-    return this.request<T>(endpoint, 'DELETE', params);
+  delete<T>(
+    endpoint: string,
+    params?: Record<string, string | number>
+  ): Promise<T> {
+    return this.request<T>(endpoint, "DELETE", params);
   }
 }
 

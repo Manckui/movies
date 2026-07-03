@@ -1,33 +1,38 @@
-import { useState } from 'react';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { IReview, IReviewsState } from './use-reviews.types';
 
-export const useReviewsStore = () => {
-  const [state, setState] = useState<IReviewsState>({
-    reviews: [],
-    editingReview: null,
-  });
+interface IReviewsStore extends IReviewsState {
+  addReview: (review: IReview) => void;
+  updateReview: (review: IReview) => void;
+  setEditingReview: (review: IReview | null) => void;
+}
 
-  const addReview = (review: Omit<IReview, 'id'>) => {
-    const newReview: IReview = { id: Date.now(), ...review };
-    setState(prev => ({ ...prev, reviews: [...prev.reviews, newReview] }));
-  };
+export const useReviewsStore = create<IReviewsStore>()(
+  persist(
+    (set) => ({
+      reviews: [],
+      editingReview: null,
 
-  const updateReview = (review: IReview) => {
-    setState(prev => ({
-      ...prev,
-      reviews: prev.reviews.map(r => (r.id === review.id ? review : r)),
-    }));
-  };
+      addReview: (review) => {
+        set((state) => ({
+          reviews: [
+            ...state.reviews.filter((r) => r.movieId !== review.movieId),
+            review,
+          ],
+        }));
+      },
 
-  const setEditingReview = (review: IReview | null) => {
-    setState(prev => ({ ...prev, editingReview: review }));
-  };
+      updateReview: (review) => {
+        set((state) => ({
+          reviews: state.reviews.map((r) =>
+            r.movieId === review.movieId ? review : r
+          ),
+        }));
+      },
 
-  return {
-    reviews: state.reviews,
-    editingReview: state.editingReview,
-    addReview,
-    updateReview,
-    setEditingReview,
-  };
-};
+      setEditingReview: (review) => set({ editingReview: review }),
+    }),
+    { name: 'movie-reviews' }
+  )
+);
