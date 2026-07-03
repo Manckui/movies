@@ -5,17 +5,19 @@ import { FrontOfficePage } from "@/components";
 import { useUserStore } from "@/hooks";
 import { ROOT } from "@/routes/paths";
 import {
+  Alert,
   Avatar,
   Box,
   Button,
   Divider,
   IconButton,
+  Snackbar,
   Stack,
   Typography,
   useTheme,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface IProfileFormValues {
@@ -30,6 +32,7 @@ export default function User() {
   const theme = useTheme();
   const { user, updateUser } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showSavedToast, setShowSavedToast] = useState(false);
 
   const methods = useForm<IProfileFormValues>({
     defaultValues: {
@@ -76,13 +79,7 @@ export default function User() {
     }
 
     updateUser({ name: data.name, avatarUrl: data.avatarUrl });
-
-    if (data.newPassword) {
-      console.log("password change requested:", {
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-      });
-    }
+    setShowSavedToast(true);
 
     methods.reset({
       name: data.name,
@@ -103,6 +100,17 @@ export default function User() {
 
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Profilo">
+      <Snackbar
+        open={showSavedToast}
+        autoHideDuration={4000}
+        onClose={() => setShowSavedToast(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="success" variant="filled">
+          Profilo aggiornato con successo
+        </Alert>
+      </Snackbar>
+
       <FormProvider methods={methods} onSubmit={methods.handleSubmit(onSubmit)}>
         <Stack
           direction={{ xs: "column", md: "row" }}
@@ -177,6 +185,12 @@ export default function User() {
                   label="Nuova Password"
                   type="password"
                   fullWidth
+                  rules={{
+                    validate: (value) =>
+                      !value ||
+                      value.length >= 6 ||
+                      "Minimo 6 caratteri",
+                  }}
                 />
                 <RHFTextField
                   name="confirmPassword"

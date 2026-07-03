@@ -31,6 +31,7 @@ const Table = (props: ITableProps) => {
   const pageSizeOptions = [5, 10, 15, 20, 50];
 
   const actualRows = data?.items || rows || [];
+  const paginationMode = restProps.paginationMode ?? 'server';
 
   const enhancedColumns = props.columns.map(col => ({
     ...col,
@@ -101,7 +102,9 @@ const Table = (props: ITableProps) => {
         loading={Boolean(loading)}
         columns={showSortableColumns ? enhancedColumns : props.columns}
         rows={actualRows}
-        rowCount={data?.count || rowCount || 0}
+        {...(paginationMode === 'server' && {
+          rowCount: data?.count || rowCount || 0,
+        })}
       />
     </LandingSkeleton>
   );

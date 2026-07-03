@@ -11,7 +11,7 @@ import { useReviewsStore, useTable } from "@/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
-import { Stack, useTheme } from "@mui/material";
+import { Alert, Button, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { IMoviesTableFilters } from "@/components/table/filters";
 import EditIcon from "@mui/icons-material/Edit";
@@ -35,6 +35,7 @@ export default function Movies() {
 
   const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string>();
 
   const filters = useMemo<IMoviesTableFilters>(
     () => ({
@@ -67,20 +68,23 @@ export default function Movies() {
     });
   };
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setIsLoading(true);
-      try {
-        const res = await getMoviesList(tableState);
-        setMovies(res);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchMovies = async () => {
+    setIsLoading(true);
+    setFetchError(undefined);
+    try {
+      const res = await getMoviesList(tableState);
+      setMovies(res);
+    } catch (error) {
+      console.error(error);
+      setFetchError("Impossibile caricare i film. Riprova.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState]);
 
   return (
@@ -104,12 +108,25 @@ export default function Movies() {
           icon={MovieIcon}
         />
       </Stack>
-      <Table
-        columns={moviesColumns(theme, router, reviews)}
-        data={movies}
-        loading={isLoading}
-        {...tableProps}
-      />
+      {fetchError ? (
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={fetchMovies}>
+              Riprova
+            </Button>
+          }
+        >
+          {fetchError}
+        </Alert>
+      ) : (
+        <Table
+          columns={moviesColumns(theme, router, reviews)}
+          data={movies}
+          loading={isLoading}
+          {...tableProps}
+        />
+      )}
     </FrontOfficePage>
   );
 }

@@ -3,25 +3,17 @@
 import { FrontOfficePage, MetricCard, Table } from "@/components";
 import { useReviewsStore } from "@/hooks";
 import { ROOT } from "@/routes/paths";
-import { getMovieDetails, IMovieDetails } from "@/services";
 import { Stack, useTheme } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { reviewsColumns } from "./columns";
-
-interface IReviewRow extends IMovieDetails {
-  myRating: number;
-}
 
 export default function Reviews() {
   const theme = useTheme();
   const router = useRouter();
   const { reviews } = useReviewsStore();
-
-  const [rows, setRows] = useState<IReviewRow[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return 0;
@@ -29,28 +21,15 @@ export default function Reviews() {
     return Math.round((sum / reviews.length) * 10) / 10;
   }, [reviews]);
 
-  useEffect(() => {
-    const fetchReviewedMovies = async () => {
-      setIsLoading(true);
-      try {
-        const movies = await Promise.all(
-          reviews.map((review) => getMovieDetails(review.movieId))
-        );
-        setRows(
-          movies.map((movie, index) => ({
-            ...movie,
-            myRating: reviews[index].rating,
-          }))
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReviewedMovies();
-  }, [reviews]);
+  const rows = useMemo(
+    () =>
+      reviews.map((review) => ({
+        ...review,
+        id: review.movieId,
+        myRating: review.rating,
+      })),
+    [reviews]
+  );
 
   const breadcrumbItems = [
     { text: "Home", link: ROOT },
@@ -76,7 +55,6 @@ export default function Reviews() {
       <Table
         columns={reviewsColumns(theme, router)}
         rows={rows}
-        loading={isLoading}
         paginationMode="client"
         sortingMode="client"
       />

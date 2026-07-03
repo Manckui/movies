@@ -6,10 +6,12 @@ import { useReviewsStore } from "@/hooks";
 import { REVIEW, ROOT } from "@/routes/paths";
 import { getMovieDetails, IMovieDetails } from "@/services";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
   Skeleton,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -29,6 +31,8 @@ export default function Details() {
 
   const [movie, setMovie] = useState<IMovieDetails>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string>();
+  const [showSavedToast, setShowSavedToast] = useState(false);
 
   const { reviews, addReview } = useReviewsStore();
   const reviewMethods = useForm<IReviewFormValues>({
@@ -43,20 +47,23 @@ export default function Details() {
     });
   }, [id, reviews, reviewMethods]);
 
-  useEffect(() => {
-    const fetchMovieDetails = async () => {
-      setIsLoading(true);
-      try {
-        const res = await getMovieDetails(Number(id));
-        setMovie(res);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchMovieDetails = async () => {
+    setIsLoading(true);
+    setFetchError(undefined);
+    try {
+      const res = await getMovieDetails(Number(id));
+      setMovie(res);
+    } catch (error) {
+      console.error(error);
+      setFetchError("Impossibile caricare il film. Riprova.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMovieDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const breadcrumbItems = [
@@ -77,25 +84,55 @@ export default function Details() {
     (movie?.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : "");
 
   const onSubmitReview = (data: IReviewFormValues) => {
+    if (!movie) return;
+
     const newReview = {
       movieId: Number(id),
       rating: data.rating,
       text: data.text,
+      title: movie.title,
+      poster_path: movie.poster_path,
+      release_date: movie.release_date,
+      original_language: movie.original_language,
+      vote_count: movie.vote_count,
+      vote_average: movie.vote_average,
     };
     addReview(newReview);
-    console.log("review saved:", newReview);
+    setShowSavedToast(true);
     reviewMethods.reset();
-    router.push(REVIEW);
+    setTimeout(() => router.push(REVIEW), 800);
   };
 
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Dettaglio Movie">
+      <Snackbar
+        open={showSavedToast}
+        autoHideDuration={4000}
+        onClose={() => setShowSavedToast(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="success" variant="filled">
+          Recensione salvata con successo
+        </Alert>
+      </Snackbar>
+
       {isLoading ? (
         <Stack gap={2}>
           <Skeleton variant="rectangular" width="100%" height={320} />
           <Skeleton variant="text" width="40%" height={45} />
           <Skeleton variant="text" width="100%" height={120} />
         </Stack>
+      ) : fetchError ? (
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={fetchMovieDetails}>
+              Riprova
+            </Button>
+          }
+        >
+          {fetchError}
+        </Alert>
       ) : (
         <Stack
           sx={{
@@ -262,7 +299,14 @@ export default function Details() {
               </Typography>
 
               <Box sx={{ mb: 3 }}>
-                <RHFRating name="rating" label="Vote (1-5)" max={5} />
+                <RHFRating
+                  name="rating"
+                  label="Vote (1-5)"
+                  max={5}
+                  rules={{
+                    validate: (value) => value > 0 || "Seleziona un voto",
+                  }}
+                />
               </Box>
 
               <RHFTextField
@@ -272,6 +316,7 @@ export default function Details() {
                 multiline
                 minRows={4}
                 fullWidth
+                rules={{ required: "Il testo della recensione è obbligatorio" }}
               />
             </Box>
             <Stack
