@@ -90,7 +90,7 @@ export default function Movies() {
         onChange={handleFiltersChange}
         titleOptions={titleOptions}
       />
-      <Stack direction="row" gap={2} sx={{ mb: 3 }}>
+      <Stack direction={{ xs: "column", sm: "row" }} gap={2} sx={{ mb: 3 }}>
         <MetricCard
           value={reviews.length}
           label="Recensioni Scritte"

@@ -134,19 +134,22 @@ export default function Details() {
           </Box>
 
           <Stack
-            direction="row"
+            direction={{ xs: "column", md: "row" }}
             gap={3}
+            alignItems={{ xs: "center", md: "flex-start" }}
             sx={{
-              position: "absolute",
+              position: { xs: "static", md: "absolute" },
               top: 24,
               left: 20,
               right: 20,
+              px: { xs: 2, md: 0 },
+              mt: { xs: -30, md: 0 },
             }}
           >
             <Box
               sx={{
-                width: 441,
-                height: 616,
+                width: { xs: 220, md: 441 },
+                height: { xs: 310, md: 616 },
                 borderRadius: 2,
                 overflow: "hidden",
                 boxShadow: 4,
@@ -163,9 +166,12 @@ export default function Details() {
               />
             </Box>
 
-            <Stack gap={2} sx={{ flex: 1 }}>
+            <Stack
+              gap={2}
+              sx={{ flex: 1, width: "100%", color: { xs: "#212B36", md: "#fff" } }}
+            >
               <Box>
-                <Stack direction="row" gap={1} alignItems="center">
+                <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
                   <Typography variant="h3">{movie?.title}</Typography>
                   <Typography variant="h3" color="text.secondary">
                     {movie?.release_date?.split("-")[0]}
@@ -240,7 +246,7 @@ export default function Details() {
           >
             <Box
               sx={{
-                pl: "489px",
+                pl: { xs: "20px", md: "489px" },
                 pr: "20px",
                 pt: 3,
                 color: "#212B36",

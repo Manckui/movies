@@ -17,6 +17,35 @@ export const SidebarStyles = styled(Box, {
   alignItems: "center",
   padding: theme.spacing(2),
   borderRight: `2px dashed ${theme.palette.grey[500]}`,
+  [theme.breakpoints.down("md")]: {
+    width: 280,
+    zIndex: theme.zIndex.drawer,
+    transform: open ? "translateX(0)" : "translateX(-100%)",
+  },
+}))
+
+export const SidebarBackdropStyle = styled(Box)(({ theme }) => ({
+  position: "fixed",
+  inset: 0,
+  backgroundColor: alpha(theme.palette.common.black, 0.5),
+  zIndex: theme.zIndex.drawer - 1,
+  [theme.breakpoints.up("md")]: {
+    display: "none",
+  },
+}))
+
+export const MobileMenuButtonStyle = styled(IconButton)(({ theme }) => ({
+  position: "fixed",
+  top: theme.spacing(2),
+  left: theme.spacing(2),
+  zIndex: theme.zIndex.drawer - 2,
+  backgroundColor: theme.palette.grey[700],
+  color: theme.palette.text.primary,
+  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+  "&:hover": { backgroundColor: theme.palette.grey[600] },
+  [theme.breakpoints.up("md")]: {
+    display: "none",
+  },
 }))
 
 export const ToggleButtonStyle = styled(IconButton)(({ theme }) => ({
@@ -58,4 +87,9 @@ export const ContentWrapper = styled(Box, {
   paddingTop: 30,
   paddingBottom: 100,
   transition: "all 0.3s",
+  [theme.breakpoints.down("md")]: {
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 70,
+  },
 }))

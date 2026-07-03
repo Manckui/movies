@@ -34,6 +34,7 @@ const Table = (props: ITableProps) => {
 
   const enhancedColumns = props.columns.map(col => ({
     ...col,
+    minWidth: col.minWidth ?? 140,
     ...(!col.sortable && { sortable: false }),
     renderHeader: col.sortable
       ? // eslint-disable-next-line @typescript-eslint/no-explicit-any

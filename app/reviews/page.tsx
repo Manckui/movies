@@ -59,7 +59,7 @@ export default function Reviews() {
 
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Recensioni">
-      <Stack direction="row" gap={2} sx={{ mb: 3 }}>
+      <Stack direction={{ xs: "column", sm: "row" }} gap={2} sx={{ mb: 3 }}>
         <MetricCard
           value={averageRating}
           label="Il Mio Voto Medio"

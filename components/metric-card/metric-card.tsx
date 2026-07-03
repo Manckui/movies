@@ -28,9 +28,10 @@ const MetricCard = ({ value, label, color, icon: Icon }: IMetricCardProps) => {
       <Icon
         sx={{
           position: "absolute",
-          right: "-40px",
-          bottom: "-20px",
-          fontSize: "15rem",
+          top: "50%",
+          right: "-16px",
+          transform: "translateY(-50%)",
+          fontSize: "10rem",
           color: alpha("#fff", 0.24),
         }}
       />
