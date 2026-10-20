@@ -14,10 +14,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const token = process.env.TMDB_ACCESS_TOKEN;
-  if (!token) {
+  // Lette solo qui, lato server: non entrano nel bundle del browser.
+  // I nomi NEXT_PUBLIC_ sono quelli già configurati su Vercel.
+  const token =
+    process.env.TMDB_ACCESS_TOKEN ?? process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+  if (!token && !apiKey) {
     return NextResponse.json(
-      { error: "TMDB_ACCESS_TOKEN non configurato" },
+      { error: "Credenziali TMDB non configurate" },
       { status: 500 }
     );
   }
@@ -29,9 +33,13 @@ export async function GET(
 
   const url = new URL(`${TMDB_BASE_URL}/${path}`);
   url.search = request.nextUrl.search;
+  if (apiKey) url.searchParams.set("api_key", apiKey);
 
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Accept: "application/json",
+    },
     next: { revalidate: 3600 },
   });
 
