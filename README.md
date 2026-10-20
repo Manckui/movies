@@ -2,7 +2,7 @@
 
 Dashboard per esplorare il catalogo [TMDB](https://www.themoviedb.org/) e scrivere recensioni personali.
 
-**Demo:** <!-- TODO: link Vercel -->
+**Demo:** https://movies-ten-phi-66.vercel.app
 
 ## Cosa fa
 
