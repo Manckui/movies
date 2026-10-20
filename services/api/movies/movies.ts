@@ -1,6 +1,7 @@
 // api/tmdb.ts
 import { API, IPaginatedList, QueryParamsObj } from "@/utils";
 import { IMovie, IMovieDetails, IMovieDto } from "./movies.types";
+import { getReachableCount, getTmdbPageWindow } from "./pagination";
 
 export const getMovieDetails = async (id: number): Promise<IMovieDetails> => {
   const res = await API.get<IMovieDetails>(`/movie/${id}`);
@@ -12,7 +13,6 @@ export const getMoviesList = async (
 ): Promise<IPaginatedList<IMovie>> => {
   const page = params.page || 1;
   const pageSize = params.pageSize || 10;
-  const moviesPerRequest = 20;
   const title = String(params.title || "").trim();
   const year =
     params.year && params.year !== "all" ? String(params.year).trim() : "";
@@ -22,47 +22,38 @@ export const getMoviesList = async (
       : "";
   const hasTitleFilter = title.length > 0;
 
-  const pagesToFetch = Math.ceil(pageSize / moviesPerRequest);
+  // /search/movie non supporta il filtro per lingua originale:
+  // con un titolo la lingua viene ignorata (il filtro è disabilitato in UI).
+  const endpoint = hasTitleFilter ? "/search/movie" : "/discover/movie";
+  const baseParams = hasTitleFilter
+    ? {
+        query: title,
+        include_adult: "false",
+        ...(year ? { primary_release_year: year } : {}),
+      }
+    : {
+        include_adult: "false",
+        sort_by: "popularity.desc",
+        ...(year ? { primary_release_year: year } : {}),
+        ...(language ? { with_original_language: language } : {}),
+      };
 
-  let allResults: IMovie[] = [];
-  let totalCount = 0;
+  const { firstPage, lastPage, offset } = getTmdbPageWindow(page, pageSize);
+  const pages = Array.from(
+    { length: lastPage - firstPage + 1 },
+    (_, index) => firstPage + index
+  );
 
-  for (let i = 0; i < pagesToFetch; i++) {
-    const queryParams = hasTitleFilter
-      ? {
-          page: page + i,
-          query: title,
-          include_adult: "false",
-          ...(year ? { primary_release_year: year } : {}),
-        }
-      : {
-          page: page + i,
-          include_adult: "false",
-          sort_by: "popularity.desc",
-          ...(year ? { primary_release_year: year } : {}),
-          ...(language ? { with_original_language: language } : {}),
-        };
+  const responses = await Promise.all(
+    pages.map((tmdbPage) =>
+      API.get<IMovieDto>(endpoint, { ...baseParams, page: tmdbPage })
+    )
+  );
 
-    const endpoint = hasTitleFilter ? "/search/movie" : "/discover/movie";
-    const res = await API.get<IMovieDto>(endpoint, queryParams);
-    let filteredResults = res.results;
-
-    if (hasTitleFilter && language) {
-      filteredResults = filteredResults.filter(
-        (movie) => movie.original_language === language
-      );
-    }
-
-    allResults = [...allResults, ...filteredResults];
-    totalCount = res.total_results;
-
-    if (allResults.length >= pageSize) break;
-  }
-
-  const hasPostFilter = hasTitleFilter && !!language;
+  const allResults = responses.flatMap((res) => res.results);
 
   return {
-    count: hasPostFilter ? allResults.length : totalCount || allResults.length,
-    items: allResults.slice(0, pageSize),
+    count: getReachableCount(responses[0]?.total_results ?? 0),
+    items: allResults.slice(offset, offset + pageSize),
   };
 };

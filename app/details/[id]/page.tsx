@@ -68,16 +68,16 @@ export default function Details() {
 
   const breadcrumbItems = [
     { text: "Home", link: ROOT },
-    { text: movie?.title || "Dettaglio Movie" },
+    { text: movie?.title || "Dettaglio film" },
   ];
 
   const backdropUrl = movie?.backdrop_path
     ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-    : "/placeholder.jpg";
+    : "/placeholder.svg";
 
   const posterUrl = movie?.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : "/placeholder.jpg";
+    : "/placeholder.svg";
 
   const websiteUrl =
     movie?.homepage ||
@@ -104,7 +104,7 @@ export default function Details() {
   };
 
   return (
-    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Dettaglio Movie">
+    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Dettaglio film">
       <Snackbar
         open={showSavedToast}
         autoHideDuration={4000}
@@ -267,7 +267,7 @@ export default function Details() {
                     </Typography>
                   </Box>
                 </Box>
-                <Typography variant="subtitle2">Average Point</Typography>
+                <Typography variant="subtitle2">Voto medio TMDB</Typography>
               </Stack>
 
               <Box>
@@ -295,13 +295,13 @@ export default function Details() {
               }}
             >
               <Typography variant="h5" sx={{ mb: 4 }}>
-                Review
+                La tua recensione
               </Typography>
 
               <Box sx={{ mb: 3 }}>
                 <RHFRating
                   name="rating"
-                  label="Vote (1-5)"
+                  label="Voto (1-5)"
                   max={5}
                   rules={{
                     validate: (value) => value > 0 || "Seleziona un voto",
@@ -311,7 +311,7 @@ export default function Details() {
 
               <RHFTextField
                 name="text"
-                label="Message"
+                label="Testo"
                 placeholder="Scrivi qui la tua recensione..."
                 multiline
                 minRows={4}

@@ -46,7 +46,7 @@ export const useTable = <FILTERS>(
     tableProps: {
       rowSelectionModel: tableState.selections,
       paginationModel: {
-        page: tableState.page ? tableState.page - 1 : 1,
+        page: tableState.page ? tableState.page - 1 : 0,
         pageSize: tableState.pageSize || (tablePageSizeOption[0] as number),
       },
       ...tableMethods,

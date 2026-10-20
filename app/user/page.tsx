@@ -9,7 +9,6 @@ import {
   Avatar,
   Box,
   Button,
-  Divider,
   IconButton,
   Snackbar,
   Stack,
@@ -20,12 +19,11 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
+// Il profilo è locale (salvato nel browser): non esiste un backend con
+// autenticazione, quindi niente cambio password finto.
 interface IProfileFormValues {
   name: string;
   avatarUrl: string;
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 }
 
 export default function User() {
@@ -38,9 +36,6 @@ export default function User() {
     defaultValues: {
       name: user.name,
       avatarUrl: user.avatarUrl,
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
     },
   });
 
@@ -48,13 +43,7 @@ export default function User() {
   const name = methods.watch("name");
 
   useEffect(() => {
-    methods.reset({
-      name: user.name,
-      avatarUrl: user.avatarUrl,
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    methods.reset({ name: user.name, avatarUrl: user.avatarUrl });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -71,23 +60,9 @@ export default function User() {
   };
 
   const onSubmit = (data: IProfileFormValues) => {
-    if (data.newPassword && data.newPassword !== data.confirmPassword) {
-      methods.setError("confirmPassword", {
-        message: "Le password non coincidono",
-      });
-      return;
-    }
-
     updateUser({ name: data.name, avatarUrl: data.avatarUrl });
     setShowSavedToast(true);
-
-    methods.reset({
-      name: data.name,
-      avatarUrl: data.avatarUrl,
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    methods.reset(data);
   };
 
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Profilo" }];
@@ -165,40 +140,6 @@ export default function User() {
                 fullWidth
                 rules={{ required: "Il nome è obbligatorio" }}
               />
-            </Box>
-
-            <Divider />
-
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Cambia Password
-              </Typography>
-              <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-                <RHFTextField
-                  name="currentPassword"
-                  label="Password Attuale"
-                  type="password"
-                  fullWidth
-                />
-                <RHFTextField
-                  name="newPassword"
-                  label="Nuova Password"
-                  type="password"
-                  fullWidth
-                  rules={{
-                    validate: (value) =>
-                      !value ||
-                      value.length >= 6 ||
-                      "Minimo 6 caratteri",
-                  }}
-                />
-                <RHFTextField
-                  name="confirmPassword"
-                  label="Conferma Nuova Password"
-                  type="password"
-                  fullWidth
-                />
-              </Stack>
             </Box>
 
             <Stack direction="row" justifyContent="flex-end">

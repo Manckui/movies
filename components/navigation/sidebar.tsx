@@ -45,8 +45,8 @@ const Sidebar = ({ children }: SidebarProps) => {
   };
 
   const navItems = [
-    { name: "Movies", path: ROOT, icon: Movie },
-    { name: "My Reviews", path: REVIEW, icon: Star },
+    { name: "Film", path: ROOT, icon: Movie },
+    { name: "Le mie recensioni", path: REVIEW, icon: Star },
   ];
 
   const getNavItemStyle = (path: string) => ({

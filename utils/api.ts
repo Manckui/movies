@@ -1,7 +1,7 @@
 // utils/api/apiClient.ts
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-const ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
-const BASE_URL = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
+// Le chiamate passano dal proxy interno (app/api/tmdb): il token TMDB
+// vive solo sul server.
+const BASE_URL = "/api/tmdb";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -21,35 +21,23 @@ class ApiClient {
     params: Record<string, string | number> = {},
     body?: unknown
   ): Promise<T> {
-    if (!API_KEY || !ACCESS_TOKEN || !BASE_URL) {
-      throw new Error(
-        "Le variabili di ambiente non sono impostate correttamente."
-      );
-    }
-
-    const url = new URL(`${this.baseUrl}${endpoint}`);
-    const mergedSearchParams = new URLSearchParams(url.search);
-    mergedSearchParams.set("api_key", API_KEY);
-
+    const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      mergedSearchParams.set(key, String(value));
+      searchParams.set(key, String(value));
     });
-
-    url.search = mergedSearchParams.toString();
+    const query = searchParams.toString();
+    const url = `${this.baseUrl}${endpoint}${query ? `?${query}` : ""}`;
 
     const options: RequestInit = {
       method,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
     };
 
     try {
-      const response = await fetch(url.toString(), options);
+      const response = await fetch(url, options);
       if (!response.ok) {
-        throw new Error(`Errore API: ${response.statusText}`);
+        throw new Error(`Errore API: ${response.status} ${response.statusText}`);
       }
       return (await response.json()) as T;
     } catch (error) {
@@ -81,4 +69,4 @@ class ApiClient {
   }
 }
 
-export const API = new ApiClient(BASE_URL!);
+export const API = new ApiClient(BASE_URL);

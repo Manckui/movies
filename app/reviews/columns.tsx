@@ -21,7 +21,7 @@ export const reviewsColumns = (
       const { row } = params;
       const imageUrl = row.poster_path
         ? `https://image.tmdb.org/t/p/w500${row.poster_path}`
-        : "/placeholder.jpg";
+        : "/placeholder.svg";
       return (
         <Stack
           direction={"row"}
@@ -68,28 +68,6 @@ export const reviewsColumns = (
     headerAlign: "left",
     valueFormatter: (value?: number) =>
       value !== undefined && value !== null ? Math.round(value) : value,
-  },
-  {
-    field: "app_review_count",
-    headerName: "Numero Recensioni App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    sortable: false,
-    filterable: false,
-    renderCell: () => 1, /// todo da modificare con il numero delle recensioni del film appena c'è back di tutta app
-  },
-  {
-    field: "app_review_average",
-    headerName: "Punteggio App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => params.row.myRating, /// todo da modificare con la media delle recensioni del film appena c'è back di tutta app
   },
   {
     field: "myRating",

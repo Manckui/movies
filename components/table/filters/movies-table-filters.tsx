@@ -20,14 +20,14 @@ const yearOptions = [
 ];
 
 const languageOptions = [
-  { value: "all", label: "All" },
-  { value: "en", label: "English" },
+  { value: "all", label: "Tutte" },
+  { value: "en", label: "Inglese" },
   { value: "it", label: "Italiano" },
-  { value: "es", label: "Espanol" },
-  { value: "fr", label: "Francais" },
-  { value: "de", label: "Deutsch" },
-  { value: "ja", label: "Japanese" },
-  { value: "ko", label: "Korean" },
+  { value: "es", label: "Spagnolo" },
+  { value: "fr", label: "Francese" },
+  { value: "de", label: "Tedesco" },
+  { value: "ja", label: "Giapponese" },
+  { value: "ko", label: "Coreano" },
 ];
 const TITLE_DEBOUNCE_MS = 350;
 const filterFieldSx = {
@@ -105,7 +105,7 @@ const MoviesTableFilters = ({
               name="title"
               options={titleOptions}
               textFieldProps={{
-                placeholder: "Insert the name of the movie",
+                placeholder: "Cerca un film per titolo",
                 sx: autocompleteFieldSx,
                 slotProps: {
                   input: {
@@ -123,7 +123,7 @@ const MoviesTableFilters = ({
           <Grid2 size={{ xs: 12, md: 3 }}>
             <RHFSelect
               name="year"
-              label="Year"
+              label="Anno"
               options={yearOptions}
               sx={selectFieldSx}
             />
@@ -132,9 +132,11 @@ const MoviesTableFilters = ({
           <Grid2 size={{ xs: 12, md: 3 }}>
             <RHFSelect
               name="language"
-              label="Language"
+              label="Lingua originale"
               options={languageOptions}
               sx={selectFieldSx}
+              // La ricerca per titolo di TMDB non filtra per lingua
+              disabled={!!debouncedTitle.trim()}
             />
           </Grid2>
         </Grid2>

@@ -8,7 +8,7 @@ import {
 import { ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
 import { useReviewsStore, useTable } from "@/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
 import { Alert, Button, Stack, useTheme } from "@mui/material";
@@ -22,7 +22,7 @@ export default function Movies() {
   const router = useRouter();
   const { reviews } = useReviewsStore();
 
-  const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
+  const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Film" }];
 
   const { tableProps, tableState, setTableState } =
     useTable<IMoviesTableFilters>({
@@ -36,6 +36,9 @@ export default function Movies() {
   const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string>();
+  // Id dell'ultima richiesta: scrivendo veloce nel filtro una risposta
+  // vecchia può arrivare dopo quella nuova e non deve sovrascriverla.
+  const lastRequestId = useRef(0);
 
   const filters = useMemo<IMoviesTableFilters>(
     () => ({
@@ -69,16 +72,19 @@ export default function Movies() {
   };
 
   const fetchMovies = async () => {
+    const requestId = ++lastRequestId.current;
     setIsLoading(true);
     setFetchError(undefined);
     try {
       const res = await getMoviesList(tableState);
-      setMovies(res);
+      if (requestId === lastRequestId.current) setMovies(res);
     } catch (error) {
       console.error(error);
-      setFetchError("Impossibile caricare i film. Riprova.");
+      if (requestId === lastRequestId.current) {
+        setFetchError("Impossibile caricare i film. Riprova.");
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === lastRequestId.current) setIsLoading(false);
     }
   };
 
@@ -88,7 +94,7 @@ export default function Movies() {
   }, [tableState]);
 
   return (
-    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Movies">
+    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Film">
       <MoviesTableFilters
         value={filters}
         onChange={handleFiltersChange}

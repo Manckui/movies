@@ -58,15 +58,6 @@ const Table = (props: ITableProps) => {
     setLoading(Boolean(loading));
   }, [loading, setLoading]);
 
-  const TableRowsLoadingOverlay = () => (
-    <TableSkeleton
-      cols={enhancedColumns.length}
-      rows={skeletonRows}
-      withFrame={false}
-      withHeader={false}
-    />
-  );
-
   return (
     <LandingSkeleton
       loading={Boolean(loading) && enableLandingSkeleton}
@@ -83,7 +74,6 @@ const Table = (props: ITableProps) => {
         columnHeaderHeight={68}
         keepNonExistentRowsSelected
         slots={{
-          loadingOverlay: TableRowsLoadingOverlay,
           columnSortedAscendingIcon: ArrowDownIcon,
           columnSortedDescendingIcon: ArrowUpIcon,
           columnUnsortedIcon: ArrowDownIcon,
@@ -96,6 +86,9 @@ const Table = (props: ITableProps) => {
         }}
         slotProps={{
           pagination: { labelRowsPerPage: "Righe per pagina" },
+          // Skeleton nativo: segue colonne e altezza delle righe e copre
+          // le righe della pagina precedente durante il caricamento
+          loadingOverlay: { variant: "skeleton", noRowsVariant: "skeleton" },
           ...slotProps,
         }}
         {...restProps}

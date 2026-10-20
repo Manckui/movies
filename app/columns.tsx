@@ -24,7 +24,7 @@ export const moviesColumns = (
       const { row } = params;
       const imageUrl = row.poster_path
         ? `https://image.tmdb.org/t/p/w500${row.poster_path}`
-        : "/placeholder.jpg";
+        : "/placeholder.svg";
       return (
         <Stack
           direction={"row"}
