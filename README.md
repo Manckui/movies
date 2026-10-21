@@ -6,7 +6,7 @@ Dashboard per esplorare il catalogo [TMDB](https://www.themoviedb.org/) e scrive
 
 ## Cosa fa
 
-- **Catalogo film** con paginazione server-side, ricerca per titolo (con debounce) e filtri per anno e lingua originale
+- **Catalogo film** con paginazione (20 film per pagina), ricerca per titolo e filtri per anno e lingua originale
 - **Dettaglio film** con poster, generi, voto medio TMDB e form di recensione (voto 1-5 + testo, validati)
 - **Le mie recensioni**: elenco delle recensioni scritte, con voto medio personale
 - **Profilo** con nome e avatar modificabili
@@ -14,33 +14,37 @@ Dashboard per esplorare il catalogo [TMDB](https://www.themoviedb.org/) e scrive
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · MUI + MUI X DataGrid · react-hook-form · Zustand · Vitest
+Next.js 15 (App Router) · React 19 · TypeScript · MUI + MUI X DataGrid · react-hook-form · Zustand
 
 ## Architettura
 
 ```
 app/
-  api/tmdb/[...path]/route.ts   proxy server-side verso TMDB
-  page.tsx                      catalogo (tabella + filtri)
-  details/[id]/                 dettaglio + form recensione
-  reviews/  user/               recensioni e profilo
-services/api/movies/            chiamate TMDB e logica di paginazione
-hooks/                          store Zustand (recensioni, utente) e useTable
-components/                     tabella, form RHF, layout, sidebar
-utils/api.ts                    client HTTP generico
+  page.tsx                Server Component: legge i filtri dall'URL e carica i film
+  movies-filters.tsx      form dei filtri (next/form, nessuno stato React)
+  movies-view.tsx         client: metriche, tabella, cambio pagina
+  details/[id]/page.tsx   Server Component: carica il film
+  details/[id]/review-form.tsx   client: form di recensione
+  reviews/  user/         recensioni e profilo (client, dati nel localStorage)
+  loading.tsx error.tsx   caricamento ed errore gestiti da Next
+services/tmdb.ts          chiamate a TMDB (solo lato server)
+hooks/                    store Zustand (recensioni, utente)
+components/               tabella, form RHF, layout, sidebar
 ```
 
 ## Scelte tecniche
 
-**Token TMDB solo sul server.** Il browser chiama `/api/tmdb/...`, un route handler che aggiunge il token e inoltra a TMDB. Il proxy accetta solo i tre endpoint usati dall'app (`movie/:id`, `discover/movie`, `search/movie`), così non diventa un accesso libero all'API col nostro token. Le risposte sono cachate per un'ora.
+**Dati caricati sul server.** Le pagine catalogo e dettaglio sono Server Components: chiamano TMDB direttamente sul server e mandano al browser l'HTML già pronto. Il token (`TMDB_ACCESS_TOKEN`, senza prefisso `NEXT_PUBLIC_`) non arriva mai al browser, quindi non serve un proxy. Le risposte sono in cache per un'ora.
 
-**Paginazione tra due sistemi diversi.** TMDB restituisce sempre pagine da 20 risultati, la tabella ne mostra 5, 10, 15, 20 o 50. `getTmdbPageWindow` converte "pagina N da M righe" nell'intervallo di pagine TMDB da richiedere (in parallelo) e nell'offset da cui tagliare. Il totale è limitato a 10.000 risultati perché TMDB non serve pagine oltre la 500. La logica è isolata in una funzione pura e coperta da test.
+**Lo stato del catalogo è nell'URL.** Pagina e filtri sono parametri dell'URL (`/?title=matrix&page=2`). I filtri sono un form: premendo "Cerca" Next aggiorna l'URL e la pagina viene rigenerata sul server. Il cambio pagina della tabella fa lo stesso con `router.push`. Gli URL sono condivisibili e il tasto indietro funziona.
 
-**Risposte fuori ordine.** Mentre si digita nel filtro, una risposta vecchia può arrivare dopo quella nuova. Ogni richiesta ha un id e viene applicata solo l'ultima.
+**Client solo dove serve.** Sono componenti client solo le parti interattive o che leggono il `localStorage`: tabella, form di recensione, recensioni, profilo.
 
-**Ricerca per titolo e lingua.** L'endpoint di ricerca di TMDB non supporta il filtro per lingua originale. Invece di filtrare la pagina lato client (con conteggi e paginazione sbagliati), il filtro lingua viene disabilitato durante la ricerca per titolo.
+**Pagine da 20.** TMDB restituisce sempre 20 risultati per pagina, quindi la tabella usa la stessa misura: pagina N della tabella = pagina N di TMDB. Il totale è limitato a 10.000 perché TMDB non serve pagine oltre la 500.
 
-**Stato client con Zustand + persist.** Non c'è un backend utenti: recensioni e profilo sono salvati nel `localStorage`. Zustand è stato scelto per la poca boilerplate rispetto a Context + reducer e per il middleware `persist` già pronto.
+**Ricerca per titolo e lingua.** L'endpoint di ricerca di TMDB non supporta il filtro per lingua originale: durante la ricerca per titolo la lingua viene ignorata (indicato sotto il campo).
+
+**Stato client con Zustand + persist.** Non c'è un backend utenti: recensioni e profilo sono salvati nel `localStorage`. Zustand per la poca boilerplate e il middleware `persist` già pronto.
 
 **Form con react-hook-form.** Wrapper `RHF*` attorno ai componenti MUI (`components/form`), così ogni form gestisce validazione ed errori allo stesso modo.
 
@@ -48,7 +52,8 @@ utils/api.ts                    client HTTP generico
 
 - Recensioni e profilo vivono nel browser: non sono condivisi tra dispositivi e non esistono recensioni di altri utenti
 - L'avatar è salvato come data URL nel `localStorage`: immagini molto grandi possono superarne il limite
-- Ordinamento delle colonne non attivo (TMDB lo supporta solo su alcuni campi in `discover`)
+- Ordinamento delle colonne non attivo
+- La dimensione della pagina è fissa a 20
 
 ## Avvio
 
@@ -56,5 +61,4 @@ utils/api.ts                    client HTTP generico
 cp .env.example .env.local   # inserisci il tuo TMDB "API Read Access Token"
 npm install
 npm run dev                  # http://localhost:3000
-npm test                     # test della paginazione
 ```

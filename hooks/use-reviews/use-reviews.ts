@@ -3,18 +3,17 @@ import { persist } from 'zustand/middleware';
 import { IReview, IReviewsState } from './use-reviews.types';
 
 interface IReviewsStore extends IReviewsState {
-  addReview: (review: IReview) => void;
-  updateReview: (review: IReview) => void;
-  setEditingReview: (review: IReview | null) => void;
+  /** Aggiunge la recensione o sostituisce quella già scritta per lo stesso film */
+  saveReview: (review: IReview) => void;
 }
 
+// persist salva automaticamente lo store nel localStorage con la chiave 'movie-reviews'
 export const useReviewsStore = create<IReviewsStore>()(
   persist(
     (set) => ({
       reviews: [],
-      editingReview: null,
 
-      addReview: (review) => {
+      saveReview: (review) => {
         set((state) => ({
           reviews: [
             ...state.reviews.filter((r) => r.movieId !== review.movieId),
@@ -22,16 +21,6 @@ export const useReviewsStore = create<IReviewsStore>()(
           ],
         }));
       },
-
-      updateReview: (review) => {
-        set((state) => ({
-          reviews: state.reviews.map((r) =>
-            r.movieId === review.movieId ? review : r
-          ),
-        }));
-      },
-
-      setEditingReview: (review) => set({ editingReview: review }),
     }),
     { name: 'movie-reviews' }
   )

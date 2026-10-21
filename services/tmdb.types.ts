@@ -1,4 +1,3 @@
-
 export interface IMovie {
   id: number;
   title: string;
@@ -27,9 +26,16 @@ export interface IMovieDetails extends IMovie {
   imdb_id: string;
 }
 
-export interface IMovieDto {
+/** Filtri del catalogo, letti dall'URL (es. /?page=2&title=matrix) */
+export interface IMoviesFilters {
   page: number;
-  results: IMovie[];
-  total_pages: number;
-  total_results: number;
+  title: string;
+  year: string;
+  language: string;
+}
+
+/** Una pagina di film già pronta per la tabella */
+export interface IMoviesPage {
+  items: IMovie[];
+  count: number;
 }

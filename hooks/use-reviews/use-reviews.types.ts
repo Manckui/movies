@@ -13,5 +13,4 @@ export interface IReview {
 
 export interface IReviewsState {
   reviews: IReview[];
-  editingReview: IReview | null;
 }
