@@ -5,6 +5,7 @@ import { Box, Skeleton } from '@mui/material';
 interface ITableSkeletonProps {
   cols: number;
   rows?: number;
+  rowHeight?: number;
   withFrame?: boolean;
   withHeader?: boolean;
 }
@@ -12,6 +13,7 @@ interface ITableSkeletonProps {
 const TableSkeleton = ({
   cols,
   rows = 8,
+  rowHeight,
   withFrame = true,
   withHeader = true,
 }: ITableSkeletonProps) => {
@@ -41,7 +43,7 @@ const TableSkeleton = ({
         </Box>
       ) : null}
 
-      <Box sx={{ p: 1.2, display: 'grid', gap: 1 }}>
+      <Box sx={{ p: rowHeight ? 0 : 1.2, display: 'grid', gap: rowHeight ? 0 : 1 }}>
         {Array.from({ length: rows }).map((_, rowIndex) => (
           <Box
             key={`row-${rowIndex}`}
@@ -49,6 +51,13 @@ const TableSkeleton = ({
               display: 'grid',
               gridTemplateColumns: `repeat(${safeCols}, 1fr)`,
               gap: 1,
+              // Con rowHeight ogni riga ha l'altezza reale della DataGrid
+              ...(rowHeight && {
+                height: rowHeight,
+                alignItems: 'center',
+                px: 1.2,
+                borderBottom: theme => `1px solid ${theme.palette.divider}`,
+              }),
             }}
           >
             {Array.from({ length: safeCols }).map((__, colIndex) => (

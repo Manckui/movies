@@ -8,10 +8,13 @@ import { Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { ITableProps } from './table.types';
 import { TableSkeleton } from './skeleton/table-skeleton';
+import { TableLoadingOverlay } from './skeleton/table-loading-overlay';
 import { LandingSkeleton } from './skeleton/landing-skeleton';
 import { useEffect } from 'react';
 import { useLandingSkeleton } from './skeleton/use-landing-skeleton';
 
+
+const ROW_HEIGHT = 72;
 
 const Table = (props: ITableProps) => {
   const {
@@ -58,15 +61,6 @@ const Table = (props: ITableProps) => {
     setLoading(Boolean(loading));
   }, [loading, setLoading]);
 
-  const TableRowsLoadingOverlay = () => (
-    <TableSkeleton
-      cols={enhancedColumns.length}
-      rows={skeletonRows}
-      withFrame={false}
-      withHeader={false}
-    />
-  );
-
   return (
     <LandingSkeleton
       loading={Boolean(loading) && enableLandingSkeleton}
@@ -79,11 +73,11 @@ const Table = (props: ITableProps) => {
         disableColumnMenu
         disableRowSelectionOnClick
         pageSizeOptions={pageSizeOptions}
-        rowHeight={72}
+        rowHeight={ROW_HEIGHT}
         columnHeaderHeight={68}
         keepNonExistentRowsSelected
         slots={{
-          loadingOverlay: TableRowsLoadingOverlay,
+          loadingOverlay: TableLoadingOverlay,
           columnSortedAscendingIcon: ArrowDownIcon,
           columnSortedDescendingIcon: ArrowUpIcon,
           columnUnsortedIcon: ArrowDownIcon,
@@ -97,6 +91,12 @@ const Table = (props: ITableProps) => {
         slotProps={{
           pagination: { labelRowsPerPage: "Righe per pagina" },
           ...slotProps,
+          loadingOverlay: {
+            cols: enhancedColumns.length,
+            rows: restProps.paginationModel?.pageSize ?? skeletonRows,
+            rowHeight: ROW_HEIGHT,
+            ...slotProps?.loadingOverlay,
+          },
         }}
         {...restProps}
         loading={Boolean(loading)}
