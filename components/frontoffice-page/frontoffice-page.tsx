@@ -3,7 +3,7 @@
 import { Avatar, Box, Stack, Typography } from "@mui/material"
 import { IFrontOfficePageProps } from "./frontoffice-page.types"
 import { BreadcrumbsCustom } from "../breadcrumb"
-import { useUserStore } from "@/hooks"
+import { CURRENT_USER as user } from "@/utils"
 import { USER } from "@/routes"
 import Link from "next/link"
 
@@ -15,7 +15,6 @@ const FrontOfficePage = ({
   action
 }: IFrontOfficePageProps) => {
   const hasBreadcrumbs = !!breadcrumbs?.length
-  const { user } = useUserStore()
 
   return (
     <Stack gap={3}>

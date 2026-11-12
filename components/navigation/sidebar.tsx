@@ -32,7 +32,8 @@ import {
   ToggleButtonStyle,
 } from "./sidebar.style";
 import { ROOT, REVIEW, USER } from "@/routes";
-import { useReviewsStore, useUserStore } from "@/hooks";
+import { useReviewsStore } from "@/hooks";
+import { CURRENT_USER as user } from "@/utils";
 
 interface SidebarProps {
   children: ReactNode;
@@ -43,7 +44,6 @@ const Sidebar = ({ children }: SidebarProps) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
-  const { user } = useUserStore();
   const { reviews } = useReviewsStore();
 
   useEffect(() => {
