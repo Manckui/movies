@@ -1,10 +1,10 @@
-import { ReactNode } from "react"
-import "./globals.scss"
-import { Sidebar } from "@/components"
-import ThemeRegistry from "@/theme/ThemeRegistry"
+import { ReactNode } from "react";
+import "./globals.scss";
+import { Sidebar } from "@/components";
+import ThemeRegistry from "@/theme/ThemeRegistry";
 
 interface LayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
@@ -16,6 +16,5 @@ export default function Layout({ children }: LayoutProps) {
         </ThemeRegistry>
       </body>
     </html>
-  )
+  );
 }
-

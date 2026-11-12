@@ -11,10 +11,9 @@ import {
 interface IRHFTextFieldProps extends Omit<TextFieldProps, "name"> {
   name: string;
   rules?: RegisterOptions<FieldValues, string>;
-  transform?: (value: string) => string;
 }
 
-const RHFTextField = ({ name, rules, transform, ...other }: IRHFTextFieldProps) => {
+const RHFTextField = ({ name, rules, ...other }: IRHFTextFieldProps) => {
   const { control } = useFormContext();
 
   return (
@@ -26,10 +25,6 @@ const RHFTextField = ({ name, rules, transform, ...other }: IRHFTextFieldProps) 
         <TextField
           {...field}
           value={field.value ?? ""}
-          onChange={(event) => {
-            const nextValue = transform ? transform(event.target.value) : event.target.value;
-            field.onChange(nextValue);
-          }}
           error={!!error}
           helperText={error?.message || other.helperText}
           {...other}

@@ -34,7 +34,6 @@ const RHFSelect = ({ name, options, rules, ...other }: IRHFSelectProps) => {
           select
           fullWidth={other.fullWidth ?? true}
           value={field.value ?? ""}
-          onChange={(event) => field.onChange(event.target.value)}
           error={!!error}
           helperText={error?.message || other.helperText}
           {...other}

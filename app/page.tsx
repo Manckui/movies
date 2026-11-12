@@ -21,8 +21,9 @@ export default function Movies() {
   const theme = useTheme();
   const router = useRouter();
   const { reviews } = useReviewsStore();
-
-  const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
+  const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string>();
 
   const { tableProps, tableState, setTableState } =
     useTable<IMoviesTableFilters>({
@@ -33,9 +34,7 @@ export default function Movies() {
       language: "all",
     });
 
-  const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [fetchError, setFetchError] = useState<string>();
+  const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
 
   const filters = useMemo<IMoviesTableFilters>(
     () => ({
@@ -88,7 +87,9 @@ export default function Movies() {
   }, [tableState]);
 
   const hasFilters =
-    !!filters.title.trim() || filters.year !== "all" || filters.language !== "all";
+    !!filters.title.trim() ||
+    filters.year !== "all" ||
+    filters.language !== "all";
   const hasLocalLanguageFilter =
     !!filters.title.trim() && filters.language !== "all";
 

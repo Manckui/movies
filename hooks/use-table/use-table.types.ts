@@ -9,7 +9,5 @@ export type BaseTableState = {
   sortOrder?: string;
 };
 
-export type UseTableProps<FILTERS> = TableState<FILTERS>;
-
 export type TableState<FILTERS> = FILTERS & BaseTableState;
 

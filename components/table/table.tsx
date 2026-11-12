@@ -10,7 +10,6 @@ import { ITableProps } from './table.types';
 import { TableSkeleton } from './skeleton/table-skeleton';
 import { TableLoadingOverlay } from './skeleton/table-loading-overlay';
 import { LandingSkeleton } from './skeleton/landing-skeleton';
-import { useEffect } from 'react';
 import { useLandingSkeleton } from './skeleton/use-landing-skeleton';
 
 
@@ -55,11 +54,7 @@ const Table = (props: ITableProps) => {
       : undefined,
   }));
 
-  const { hasLanded, setLoading } = useLandingSkeleton();
-
-  useEffect(() => {
-    setLoading(Boolean(loading));
-  }, [loading, setLoading]);
+  const hasLanded = useLandingSkeleton(loading);
 
   return (
     <LandingSkeleton

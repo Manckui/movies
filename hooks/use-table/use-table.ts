@@ -1,13 +1,10 @@
 import { DataGridProps } from '@mui/x-data-grid';
 import { useState } from 'react';
-import {  TableState, UseTableProps } from '.';
+import { TableState } from './use-table.types';
 import { SortOrder, tablePageSizeOption } from '@/utils';
 
 export const useTable = <FILTERS>(
-  initialState: UseTableProps<FILTERS> = {
-    page: 1,
-    pageSize: tablePageSizeOption[0] as number,
-  } as TableState<FILTERS>
+  initialState: TableState<FILTERS>
 ) => {
   const [tableState, setTableState] =
     useState<TableState<FILTERS>>(initialState);
@@ -33,23 +30,18 @@ export const useTable = <FILTERS>(
     setTableState(prev => ({ ...prev, page: page + 1, pageSize }));
   };
 
-  const tableMethods = {
-    onSortModelChange,
-    onPaginationModelChange,
-    onRowSelectionModelChange,
-  };
-
   return {
     tableState,
     setTableState,
-    tableMethods,
     tableProps: {
       rowSelectionModel: tableState.selections,
       paginationModel: {
         page: tableState.page ? tableState.page - 1 : 1,
         pageSize: tableState.pageSize || (tablePageSizeOption[0] as number),
       },
-      ...tableMethods,
+      onSortModelChange,
+      onPaginationModelChange,
+      onRowSelectionModelChange,
     },
   };
 };

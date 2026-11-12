@@ -7,12 +7,3 @@ export type LandingSkeletonProps = {
   children: ReactNode;
 };
 
-export interface IUseLandingSkeletonProps {
-  loadingFinishCountToLand?: number;
-}
-
-export interface IUseLandingSkeletonReturn {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  hasLanded: boolean;
-}

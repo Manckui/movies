@@ -2,7 +2,6 @@ export interface IReview {
   movieId: number;
   text: string;
   rating: number;
-  status?: string;
   title: string;
   poster_path: string;
   release_date: string;
@@ -11,7 +10,3 @@ export interface IReview {
   vote_average: number;
 }
 
-export interface IReviewsState {
-  reviews: IReview[];
-  editingReview: IReview | null;
-}
