@@ -9,4 +9,3 @@ export interface IReview {
   vote_count: number;
   vote_average: number;
 }
-

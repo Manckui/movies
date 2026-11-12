@@ -8,7 +8,7 @@ import {
 import { ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
 import { useReviewsStore, useTable } from "@/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
 import { Alert, Button, Stack, useTheme } from "@mui/material";
@@ -21,10 +21,12 @@ export default function Movies() {
   const theme = useTheme();
   const router = useRouter();
   const { reviews } = useReviewsStore();
+
   const [movies, setMovies] = useState<IPaginatedList<IMovie>>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string>();
 
+  // Paginazione e filtri.
   const { tableProps, tableState, setTableState } =
     useTable<IMoviesTableFilters>({
       page: 1,
@@ -36,6 +38,7 @@ export default function Movies() {
 
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
 
+  // Filtri
   const filters = useMemo<IMoviesTableFilters>(
     () => ({
       title: tableState.title || "",
@@ -45,11 +48,13 @@ export default function Movies() {
     [tableState.language, tableState.title, tableState.year]
   );
 
+  // Suggerimenti unici.
   const titleOptions = useMemo(() => {
     const options = movies?.items.map((movie) => movie.title) || [];
     return [...new Set(options)];
   }, [movies]);
 
+  // Applica filtri
   const handleFiltersChange = (nextFilters: IMoviesTableFilters) => {
     setTableState((prev) => {
       const isSame =
@@ -67,7 +72,8 @@ export default function Movies() {
     });
   };
 
-  const fetchMovies = async () => {
+  // Carica i film.
+  const fetchMovies = useCallback(async () => {
     setIsLoading(true);
     setFetchError(undefined);
     try {
@@ -79,17 +85,19 @@ export default function Movies() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [tableState]);
 
   useEffect(() => {
     fetchMovies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState]);
+  }, [fetchMovies]);
 
+  // Totale senza filtri.
   const hasFilters =
     !!filters.title.trim() ||
     filters.year !== "all" ||
     filters.language !== "all";
+
+  // Filtro locale sulla lingua.
   const hasLocalLanguageFilter =
     !!filters.title.trim() && filters.language !== "all";
 

@@ -6,4 +6,3 @@ export type LandingSkeletonProps = {
   hasLanded: boolean;
   children: ReactNode;
 };
-

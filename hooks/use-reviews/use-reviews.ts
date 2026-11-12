@@ -20,7 +20,6 @@ export const useReviewsStore = create<IReviewsStore>()(
           ],
         }));
       },
-
     }),
     {
       name: 'movie-reviews',

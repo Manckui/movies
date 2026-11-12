@@ -11,4 +11,3 @@ export interface ITableProps<ITEMS = any> extends Omit<DataGridProps, 'rows'> {
     items: ITEMS[];
   } | null;
 }
-

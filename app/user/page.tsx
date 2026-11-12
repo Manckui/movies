@@ -55,8 +55,7 @@ export default function User() {
       newPassword: "",
       confirmPassword: "",
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [methods, user]);
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -187,9 +186,7 @@ export default function User() {
                   fullWidth
                   rules={{
                     validate: (value) =>
-                      !value ||
-                      value.length >= 6 ||
-                      "Minimo 6 caratteri",
+                      !value || value.length >= 6 || "Minimo 6 caratteri",
                   }}
                 />
                 <RHFTextField

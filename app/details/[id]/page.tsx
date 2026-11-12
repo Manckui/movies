@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface IReviewFormValues {
@@ -47,7 +47,8 @@ export default function Details() {
     });
   }, [id, reviews, reviewMethods]);
 
-  const fetchMovieDetails = async () => {
+  // Carica il film.
+  const fetchMovieDetails = useCallback(async () => {
     setIsLoading(true);
     setFetchError(undefined);
     try {
@@ -59,12 +60,12 @@ export default function Details() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
+  // Ricarica al cambio film.
   useEffect(() => {
     fetchMovieDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [fetchMovieDetails]);
 
   const breadcrumbItems = [
     { text: "Home", link: ROOT },
