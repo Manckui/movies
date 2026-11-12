@@ -139,6 +139,7 @@ export default function Details() {
             position: "relative",
             backgroundColor: "#f5f5f5",
             borderRadius: 10,
+            overflow: "hidden",
             borderBottomLeftRadius: 4,
             borderBottomRightRadius: 4,
           }}
