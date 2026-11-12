@@ -8,10 +8,10 @@ import {
 import { ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
 import { useReviewsStore, useTable } from "@/hooks";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
-import { Alert, Button, Stack, useTheme } from "@mui/material";
+import { Alert, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { IMoviesTableFilters } from "@/components/table/filters";
 import EditIcon from "@mui/icons-material/Edit";
@@ -73,23 +73,23 @@ export default function Movies() {
   };
 
   // Carica i film.
-  const fetchMovies = useCallback(async () => {
-    setIsLoading(true);
-    setFetchError(undefined);
-    try {
-      const res = await getMoviesList(tableState);
-      setMovies(res);
-    } catch (error) {
-      console.error(error);
-      setFetchError("Impossibile caricare i film. Riprova.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [tableState]);
-
   useEffect(() => {
+    const fetchMovies = async () => {
+      setIsLoading(true);
+      setFetchError(undefined);
+      try {
+        const res = await getMoviesList(tableState);
+        setMovies(res);
+      } catch (error) {
+        console.error(error);
+        setFetchError("Impossibile caricare i film.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchMovies();
-  }, [fetchMovies]);
+  }, [tableState]);
 
   // Totale senza filtri.
   const hasFilters =
@@ -125,16 +125,7 @@ export default function Movies() {
         )}
       </Stack>
       {fetchError ? (
-        <Alert
-          severity="error"
-          action={
-            <Button color="inherit" size="small" onClick={fetchMovies}>
-              Riprova
-            </Button>
-          }
-        >
-          {fetchError}
-        </Alert>
+        <Alert severity="error">{fetchError}</Alert>
       ) : (
         <Table
           columns={moviesColumns(theme, router, reviews)}

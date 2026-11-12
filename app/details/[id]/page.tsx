@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface IReviewFormValues {
@@ -48,24 +48,23 @@ export default function Details() {
   }, [id, reviews, reviewMethods]);
 
   // Carica il film.
-  const fetchMovieDetails = useCallback(async () => {
-    setIsLoading(true);
-    setFetchError(undefined);
-    try {
-      const res = await getMovieDetails(Number(id));
-      setMovie(res);
-    } catch (error) {
-      console.error(error);
-      setFetchError("Impossibile caricare il film. Riprova.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id]);
-
-  // Ricarica al cambio film.
   useEffect(() => {
+    const fetchMovieDetails = async () => {
+      setIsLoading(true);
+      setFetchError(undefined);
+      try {
+        const res = await getMovieDetails(Number(id));
+        setMovie(res);
+      } catch (error) {
+        console.error(error);
+        setFetchError("Impossibile caricare il film.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchMovieDetails();
-  }, [fetchMovieDetails]);
+  }, [id]);
 
   const breadcrumbItems = [
     { text: "Home", link: ROOT },
@@ -124,16 +123,7 @@ export default function Details() {
           <Skeleton variant="text" width="100%" height={120} />
         </Stack>
       ) : fetchError ? (
-        <Alert
-          severity="error"
-          action={
-            <Button color="inherit" size="small" onClick={fetchMovieDetails}>
-              Riprova
-            </Button>
-          }
-        >
-          {fetchError}
-        </Alert>
+        <Alert severity="error">{fetchError}</Alert>
       ) : (
         <Stack
           sx={{
