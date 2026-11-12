@@ -1,4 +1,4 @@
-import { alpha, Box, Typography } from "@mui/material";
+import { alpha, Box, Card, Stack, Typography } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 
 interface IMetricCardProps {
@@ -10,32 +10,37 @@ interface IMetricCardProps {
 
 const MetricCard = ({ value, label, color, icon: Icon }: IMetricCardProps) => {
   return (
-    <Box
-      sx={{
-        position: "relative",
-        flex: 1,
-        overflow: "hidden",
-        borderRadius: 3,
-        p: 3,
-        backgroundColor: color,
-        color: "#fff",
-      }}
+    <Card
+      component={Stack}
+      direction="row"
+      alignItems="center"
+      gap={2}
+      sx={{ flex: 1, px: 3, py: 2.5 }}
     >
-      <Typography variant="h3">{value}</Typography>
-      <Typography variant="body2" sx={{ opacity: 0.8 }}>
-        {label}
-      </Typography>
-      <Icon
+      <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          right: "-16px",
-          transform: "translateY(-50%)",
-          fontSize: "10rem",
-          color: alpha("#fff", 0.24),
+          width: 52,
+          height: 52,
+          minWidth: 52,
+          borderRadius: "14px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: alpha(color, 0.16),
+          color,
         }}
-      />
-    </Box>
+      >
+        <Icon sx={{ fontSize: 26 }} />
+      </Box>
+      <Box>
+        <Typography variant="subtitle2" color="text.secondary">
+          {label}
+        </Typography>
+        <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: "38px" }}>
+          {value}
+        </Typography>
+      </Box>
+    </Card>
   );
 };
 

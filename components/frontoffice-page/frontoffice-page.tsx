@@ -2,44 +2,64 @@
 
 import { Avatar, Box, Stack, Typography } from "@mui/material"
 import { IFrontOfficePageProps } from "./frontoffice-page.types"
-import theme from "@/theme/theme"
 import { BreadcrumbsCustom } from "../breadcrumb"
-import { useUserStore } from "@/hooks"
+import { CURRENT_USER as user } from "@/utils"
 import { USER } from "@/routes"
 import Link from "next/link"
 
 const FrontOfficePage = ({
   children,
   breadcrumbs,
-  title
+  title,
+  subtitle,
+  action
 }: IFrontOfficePageProps) => {
   const hasBreadcrumbs = !!breadcrumbs?.length
-  const { user } = useUserStore()
 
   return (
-    <>
-      <Stack alignItems={'flex-end'} sx={{ mb: 5 }}>
-        <Link href={USER}>
+    <Stack gap={3}>
+      <Stack alignItems={"flex-end"}>
+        <Link href={USER} aria-label="Profilo">
           <Avatar
             src={user.avatarUrl}
-            sx={{boxShadow: theme.shadows[5], width: 40, height: 40}}
+            sx={{
+              width: 40,
+              height: 40,
+              boxShadow: (theme) => `0 0 0 2px ${theme.palette.primary.main}`
+            }}
           />
         </Link>
       </Stack>
-      <Box sx={{ mb: 5 }}>
-        <Typography
-          variant="h4"
-          sx={{ color: theme.palette.text.primary, mb: 1 }}>
-          {title}
-        </Typography>
-        {hasBreadcrumbs && (
-          <Stack>
-            <BreadcrumbsCustom items={breadcrumbs} />
+
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "flex-start", sm: "flex-end" }}
+        justifyContent="space-between"
+        gap={2}>
+        <Box>
+          {hasBreadcrumbs && (
+            <Box sx={{ mb: 1 }}>
+              <BreadcrumbsCustom items={breadcrumbs} />
+            </Box>
+          )}
+          <Typography variant="h3" component="h1" color="text.primary">
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" color="text.secondary">
+              {subtitle}
+            </Typography>
+          )}
+        </Box>
+        {action && (
+          <Stack direction="row" gap={1.5}>
+            {action}
           </Stack>
         )}
-      </Box>
+      </Stack>
+
       {children}
-    </>
+    </Stack>
   )
 }
 

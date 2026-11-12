@@ -7,23 +7,33 @@ import {
   Avatar,
   useTheme,
   Stack,
-  alpha,
   useMediaQuery,
+  Chip,
 } from "@mui/material";
-import { ArrowBack, ArrowForward, Menu, Movie, Star } from "@mui/icons-material";
-import Image from "next/image";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  Movie,
+  Person,
+  Star,
+} from "@mui/icons-material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BrandStyle,
   ContentWrapper,
+  LogoStyle,
   MobileMenuButtonStyle,
+  NavItemStyle,
   ProfileContainerStyle,
   SidebarBackdropStyle,
   SidebarStyles,
   ToggleButtonStyle,
 } from "./sidebar.style";
 import { ROOT, REVIEW, USER } from "@/routes";
-import { useUserStore } from "@/hooks";
+import { useReviewsStore } from "@/hooks";
+import { CURRENT_USER as user } from "@/utils";
 
 interface SidebarProps {
   children: ReactNode;
@@ -34,7 +44,7 @@ const Sidebar = ({ children }: SidebarProps) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
-  const { user } = useUserStore();
+  const { reviews } = useReviewsStore();
 
   useEffect(() => {
     setOpen(!isMobile);
@@ -46,30 +56,23 @@ const Sidebar = ({ children }: SidebarProps) => {
 
   const navItems = [
     { name: "Movies", path: ROOT, icon: Movie },
-    { name: "My Reviews", path: REVIEW, icon: Star },
+    { name: "Le mie recensioni", path: REVIEW, icon: Star, badge: reviews.length },
+    { name: "Profilo", path: USER, icon: Person },
   ];
 
-  const getNavItemStyle = (path: string) => ({
-    color:
-      pathname === path
-        ? theme.palette.primary.light
-        : theme.palette.text.secondary,
-    backgroundColor:
-      pathname === path && open
-        ? alpha(theme.palette.primary.main, 0.08)
-        : "transparent",
-    "&:hover": {
-      backgroundColor:
-        pathname === path
-          ? alpha(theme.palette.primary.main, 0.2)
-          : alpha(theme.palette.grey[500], 0.08),
-    },
-  });
+  // Il dettaglio film appartiene alla sezione Movies.
+  const isActive = (path: string) =>
+    path === ROOT
+      ? pathname === ROOT || pathname.startsWith("/details")
+      : pathname.startsWith(path);
 
   return (
     <>
       {isMobile && !open && (
-        <MobileMenuButtonStyle onClick={() => setOpen(true)}>
+        <MobileMenuButtonStyle
+          aria-label="Apri menu"
+          onClick={() => setOpen(true)}
+        >
           <Menu />
         </MobileMenuButtonStyle>
       )}
@@ -78,115 +81,92 @@ const Sidebar = ({ children }: SidebarProps) => {
       )}
       <SidebarStyles open={open}>
         {/* Logo */}
-        <Box sx={{ width: "100%" }}>
-          <Image
-            src="/logo.svg"
-            alt="Logo"
-            width={open ? 40 : 60}
-            height={open ? 40 : 60}
-          />
-        </Box>
+        <BrandStyle open={open}>
+          <LogoStyle>
+            <Movie sx={{ fontSize: 22 }} />
+          </LogoStyle>
+          {open && (
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
+                CineTrack
+              </Typography>
+              <Typography variant="caption" color="text.disabled">
+                Movies dashboard
+              </Typography>
+            </Box>
+          )}
+        </BrandStyle>
+
+        {/* Navigation Links */}
+        {open && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.disabled",
+              fontWeight: 700,
+              letterSpacing: 1.1,
+              textTransform: "uppercase",
+              px: 1.5,
+              pb: 1,
+            }}
+          >
+            Navigazione
+          </Typography>
+        )}
+
+        {navItems.map(({ name, path, icon: Icon, badge }) => (
+          <Link
+            key={path}
+            href={path}
+            style={{ textDecoration: "none" }}
+            onClick={handleNavClick}
+            aria-label={name}
+          >
+            <NavItemStyle open={open} active={isActive(path)}>
+              <Icon sx={{ fontSize: 22 }} />
+              {open && <Box sx={{ flex: 1 }}>{name}</Box>}
+              {open && !!badge && (
+                <Chip
+                  label={badge}
+                  size="small"
+                  color="success"
+                  sx={{ height: 22, minWidth: 28 }}
+                />
+              )}
+            </NavItemStyle>
+          </Link>
+        ))}
+
+        <Box sx={{ flex: 1 }} />
 
         {/* Profile */}
         <Link
           href={USER}
-          style={{ textDecoration: "none", width: "100%" }}
+          style={{ textDecoration: "none" }}
           onClick={handleNavClick}
         >
-          <ProfileContainerStyle
-            direction={"row"}
-            alignItems={"center"}
-            gap={2}
-            open={open}
-          >
-            <Avatar
-              src={user.avatarUrl}
-              sx={{ width: open ? 46 : 34, height: open ? 46 : 34 }}
-            />
+          <ProfileContainerStyle open={open}>
+            <Avatar src={user.avatarUrl} sx={{ width: 40, height: 40 }} />
             {open && (
-              <Box gap={0.5}>
-                <Typography variant="subtitle1" sx={{ fontSize: "1.7rem" }}>
+              <Stack sx={{ minWidth: 0 }}>
+                <Typography variant="subtitle2" color="text.primary" noWrap>
                   {user.name}
                 </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    color: theme.palette.text.disabled,
-                    fontSize: "1.5rem",
-                  }}
-                >
+                <Typography variant="caption" color="text.disabled">
                   Admin
                 </Typography>
-              </Box>
+              </Stack>
             )}
           </ProfileContainerStyle>
         </Link>
 
-        {/* Navigation Links */}
-        <Stack direction={"column"} gap={2} sx={{ width: "100%" }}>
-          {open && (
-            <Typography
-              variant="body2"
-              sx={{
-                color: theme.palette.text.secondary,
-                fontSize: "1.3rem",
-                fontWeight: 700,
-                px: "10px",
-                mb: 2,
-                textTransform: "uppercase",
-              }}
-            >
-              Movies dashboard
-            </Typography>
-          )}
-
-          {navItems.map(({ name, path, icon: Icon }) => (
-            <Link
-              key={path}
-              href={path}
-              style={{ textDecoration: "none" }}
-              onClick={handleNavClick}
-            >
-              <Stack
-                alignItems={"center"}
-                direction={"row"}
-                justifyContent={open ? "" : "center"}
-                sx={{
-                  px: "10px",
-                  height: "54px",
-                  borderRadius: "8px",
-                  ...getNavItemStyle(path),
-                }}
-                gap={2}
-              >
-                <Icon
-                  sx={{
-                    width: open ? 28 : 36,
-                    height: open ? 28 : 36,
-                    color: getNavItemStyle(path).color,
-                  }}
-                />
-                {open && (
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: getNavItemStyle(path).color,
-                      fontSize: "1.6rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {name}
-                  </Typography>
-                )}
-              </Stack>
-            </Link>
-          ))}
-        </Stack>
-
         {/* Toggle Button */}
         {!isMobile && (
-          <ToggleButtonStyle onClick={() => setOpen(!open)}>
-            {open ? <ArrowBack /> : <ArrowForward />}
+          <ToggleButtonStyle
+            aria-label={open ? "Comprimi menu" : "Espandi menu"}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <ChevronLeft /> : <ChevronRight />}
           </ToggleButtonStyle>
         )}
       </SidebarStyles>

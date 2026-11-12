@@ -5,17 +5,32 @@ import {
   MoviesTableFilters,
   Table,
 } from "@/components";
-import { ROOT } from "@/routes";
+import { MOVIE_DETAILS, REVIEW, ROOT } from "@/routes";
 import { moviesColumns } from "./columns";
-import { useReviewsStore, useTable } from "@/hooks";
+import { getAverageRating, useReviewsStore, useTable } from "@/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { getMoviesList, IMovie } from "@/services";
 import { IPaginatedList } from "@/utils";
-import { Alert, Stack, useTheme } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Stack,
+  useTheme,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { IMoviesTableFilters } from "@/components/table/filters";
 import EditIcon from "@mui/icons-material/Edit";
 import MovieIcon from "@mui/icons-material/Movie";
+import StarIcon from "@mui/icons-material/Star";
+
+const DEFAULT_FILTERS: IMoviesTableFilters = {
+  title: "",
+  year: "all",
+  language: "all",
+};
 
 export default function Movies() {
   const theme = useTheme();
@@ -31,9 +46,7 @@ export default function Movies() {
     useTable<IMoviesTableFilters>({
       page: 1,
       pageSize: 20,
-      title: "",
-      year: "all",
-      language: "all",
+      ...DEFAULT_FILTERS,
     });
 
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Movies" }];
@@ -102,39 +115,68 @@ export default function Movies() {
     !!filters.title.trim() && filters.language !== "all";
 
   return (
-    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Movies">
-      <MoviesTableFilters
-        value={filters}
-        onChange={handleFiltersChange}
-        titleOptions={titleOptions}
-      />
-      <Stack direction={{ xs: "column", sm: "row" }} gap={2} sx={{ mb: 3 }}>
+    <FrontOfficePage
+      breadcrumbs={breadcrumbItems}
+      title="Movies"
+      subtitle="Esplora il catalogo, filtra e recensisci i tuoi film preferiti."
+      action={
+        <Button
+          component={Link}
+          href={REVIEW}
+          variant="outlined"
+          color="inherit"
+          startIcon={<StarIcon sx={{ color: "warning.main" }} />}
+        >
+          Le mie recensioni
+        </Button>
+      }
+    >
+      <Stack direction={{ xs: "column", sm: "row" }} gap={3}>
+        <MetricCard
+          value={(movies?.count ?? 0).toLocaleString("it-IT")}
+          label={hasFilters ? "Risultati" : "Totale film"}
+          color={theme.palette.info.main}
+          icon={MovieIcon}
+        />
         <MetricCard
           value={reviews.length}
-          label="Recensioni Scritte"
-          color={theme.palette.info.dark}
+          label="Recensioni scritte"
+          color={theme.palette.primary.main}
           icon={EditIcon}
         />
-        {!hasFilters && (
-          <MetricCard
-            value={movies?.count ?? 0}
-            label="Totale Film"
-            color={theme.palette.success.dark}
-            icon={MovieIcon}
+        <MetricCard
+          value={getAverageRating(reviews).toLocaleString("it-IT")}
+          label="Il mio voto medio"
+          color={theme.palette.warning.main}
+          icon={StarIcon}
+        />
+      </Stack>
+
+      <Card>
+        <Box sx={{ p: 3 }}>
+          <MoviesTableFilters
+            value={filters}
+            onChange={handleFiltersChange}
+            titleOptions={titleOptions}
+          />
+        </Box>
+
+        {fetchError ? (
+          <Alert severity="error" sx={{ mx: 3, mb: 3 }}>
+            {fetchError}
+          </Alert>
+        ) : (
+          <Table
+            columns={moviesColumns(router, reviews)}
+            data={movies}
+            loading={isLoading}
+            hideFooter={hasLocalLanguageFilter}
+            onRowClick={({ id }) => router.push(MOVIE_DETAILS(Number(id)))}
+            sx={{ "& .MuiDataGrid-row": { cursor: "pointer" } }}
+            {...tableProps}
           />
         )}
-      </Stack>
-      {fetchError ? (
-        <Alert severity="error">{fetchError}</Alert>
-      ) : (
-        <Table
-          columns={moviesColumns(theme, router, reviews)}
-          data={movies}
-          loading={isLoading}
-          hideFooter={hasLocalLanguageFilter}
-          {...tableProps}
-        />
-      )}
+      </Card>
     </FrontOfficePage>
   );
 }

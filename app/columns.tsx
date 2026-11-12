@@ -3,182 +3,160 @@ import {
   GridColDef,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { alpha, Box, Stack, Theme, Tooltip, Typography } from "@mui/material";
-import Image from "next/image";
+import { Chip, Rating, Tooltip, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PendingIcon from "@mui/icons-material/Pending";
 import { MOVIE_DETAILS } from "@/routes";
 import { useRouter } from "next/navigation";
 import { IReview } from "@/hooks";
+import { MovieTitleCell, ScoreCell } from "@/components";
+import { formatDate } from "@/utils";
 
 export const moviesColumns = (
-  theme: Theme,
   router: ReturnType<typeof useRouter>,
   reviews: IReview[] = []
-): GridColDef[] => [
-  {
-    field: "title",
-    headerName: "Film",
-    flex: 2,
-    renderCell: (params) => {
-      const { row } = params;
-      const imageUrl = row.poster_path
-        ? `https://image.tmdb.org/t/p/w500${row.poster_path}`
-        : "/placeholder.jpg";
-      return (
-        <Stack
-          direction={"row"}
-          alignItems={"center"}
-          gap={2}
-          sx={{ height: "100%" }}
-        >
-          <Image
-            src={imageUrl}
-            width={56}
-            height={56}
-            alt={row.title}
-            style={{
-              borderRadius: "100%",
-              objectFit: "cover",
-              width: 56,
-              height: 56,
-              minWidth: 56,
-              minHeight: 56,
-            }}
-            priority={false}
-          />
-          <Typography variant="subtitle1">{row.title}</Typography>
-        </Stack>
-      );
-    },
-  },
-  { field: "release_date", headerName: "Data di Uscita", flex: 1 },
-  { field: "original_language", headerName: "Lingua Originale", flex: 1 },
-  {
-    field: "vote_count",
-    headerName: "Totale Recensioni",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-  },
-  {
-    field: "vote_average",
-    headerName: "Media Recensioni",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    valueFormatter: (value?: number) =>
-      value !== undefined && value !== null ? Math.round(value) : value,
-  },
-  {
-    field: "app_review_count",
-    headerName: "Numero Recensioni App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      return review ? 1 : 0;
-    },
-  },
-  {
-    field: "app_review_average",
-    headerName: "Punteggio App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      return review ? review.rating : "-";
-    },
-  },
-  {
-    field: "status",
-    headerName: "Stato",
-    flex: 1,
-    renderCell: (params) => {
-      const review = reviews.find((r) => r.movieId === params.row.id);
-      const status = review ? "Recensito" : "Non recensito";
-      return (
-        <Stack justifyContent={"center"} sx={{ height: "100%", width: "100%" }}>
-          <Box
-            sx={{
-              backgroundColor: review
-                ? alpha(theme.palette.success.main, 0.3)
-                : alpha(theme.palette.grey[500], 0.08),
-              color: review
-                ? theme.palette.success.light
-                : theme.palette.text.primary,
-              padding: "6px 12px",
-              borderRadius: "6px",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "14px",
-              width: "fit-content",
-            }}
-          >
-            {status}
-          </Box>
-        </Stack>
-      );
-    },
-  },
-  {
-    field: "config",
-    headerName: "Azioni",
-    type: "actions",
-    headerAlign: "right",
-    align: "right",
-    minWidth: 120,
-    getActions: (params: GridRowParams) => {
-      const id = params.row.id;
-      const hasReview = reviews.some((r) => r.movieId === id);
+): GridColDef[] => {
+  const findReview = (movieId: number) =>
+    reviews.find((r) => r.movieId === movieId);
 
-      const actions = [
-        <Tooltip title="Dettagli" placement="top" key={`details-movies-${id}`}>
-          <GridActionsCellItem
-            icon={
-              <VisibilityIcon
-                sx={{ color: theme.palette.text.primary, fontSize: "2.4rem" }}
-              />
-            }
-            label="Dettagli"
-            sx={{ cursor: "pointer" }}
-            onClick={() => router.push(MOVIE_DETAILS(id))}
+  return [
+    {
+      field: "title",
+      headerName: "Film",
+      flex: 2.4,
+      minWidth: 220,
+      renderCell: ({ row }) => (
+        <MovieTitleCell
+          title={row.title}
+          posterPath={row.poster_path}
+          subtitle={row.release_date?.split("-")[0]}
+        />
+      ),
+    },
+    {
+      field: "release_date",
+      headerName: "Uscita",
+      flex: 1,
+      minWidth: 110,
+      valueFormatter: (value?: string) => formatDate(value),
+    },
+    {
+      field: "original_language",
+      headerName: "Lingua",
+      flex: 0.8,
+      minWidth: 90,
+      renderCell: ({ value }) => (
+        <Chip
+          label={String(value).toUpperCase()}
+          size="small"
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      field: "vote_count",
+      headerName: "Voti TMDB",
+      flex: 1,
+      minWidth: 110,
+      type: "number",
+      align: "left",
+      headerAlign: "left",
+      valueFormatter: (value?: number) => value?.toLocaleString("it-IT"),
+    },
+    {
+      field: "vote_average",
+      headerName: "Media TMDB",
+      flex: 1.2,
+      minWidth: 130,
+      type: "number",
+      align: "left",
+      headerAlign: "left",
+      renderCell: ({ value }) => <ScoreCell value={value} />,
+    },
+    {
+      field: "app_review_average",
+      headerName: "Il mio voto",
+      flex: 1.1,
+      minWidth: 120,
+      sortable: false,
+      filterable: false,
+      renderCell: ({ row }) => {
+        const review = findReview(row.id);
+        return review ? (
+          <Rating value={review.rating} readOnly size="small" />
+        ) : (
+          <Typography color="text.disabled">—</Typography>
+        );
+      },
+    },
+    {
+      field: "status",
+      headerName: "Stato",
+      flex: 1.1,
+      minWidth: 150,
+      sortable: false,
+      renderCell: ({ row }) =>
+        findReview(row.id) ? (
+          <Chip
+            icon={<CheckCircleIcon />}
+            label="Recensito"
+            size="small"
+            color="success"
           />
-        </Tooltip>,
-      ];
+        ) : (
+          <Chip icon={<PendingIcon />} label="Da recensire" size="small" />
+        ),
+    },
+    {
+      field: "config",
+      headerName: "Azioni",
+      type: "actions",
+      headerAlign: "right",
+      align: "right",
+      minWidth: 110,
+      getActions: (params: GridRowParams) => {
+        const id = params.row.id;
 
-      if (hasReview) {
-        actions.push(
+        const actions = [
           <Tooltip
-            title="Modifica Recensione"
+            title="Dettagli"
             placement="top"
-            key={`edit-review-${id}`}
+            key={`details-movies-${id}`}
           >
             <GridActionsCellItem
-              icon={
-                <EditIcon
-                  sx={{ color: theme.palette.text.primary, fontSize: "2.4rem" }}
-                />
-              }
-              label="Modifica Recensione"
-              sx={{ cursor: "pointer" }}
-              onClick={() => router.push(MOVIE_DETAILS(id))}
+              icon={<VisibilityIcon />}
+              label="Dettagli"
+              onClick={(event) => {
+                event.stopPropagation();
+                router.push(MOVIE_DETAILS(id));
+              }}
             />
-          </Tooltip>
-        );
-      }
+          </Tooltip>,
+        ];
 
-      return actions;
+        if (findReview(id)) {
+          actions.push(
+            <Tooltip
+              title="Modifica recensione"
+              placement="top"
+              key={`edit-review-${id}`}
+            >
+              <GridActionsCellItem
+                icon={<EditIcon />}
+                label="Modifica recensione"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  router.push(MOVIE_DETAILS(id));
+                }}
+              />
+            </Tooltip>
+          );
+        }
+
+        return actions;
+      },
     },
-  },
-];
+  ];
+};
