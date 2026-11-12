@@ -22,11 +22,12 @@ export default function DataGridOverrides(theme: Theme): Components {
     MuiDataGrid: {
       styleOverrides: {
         root: {
-          borderRadius: "12px",
-          backgroundColor: theme.palette.background.paper,
+          // La griglia è sempre contenuta in una Card: niente bordo/ombra propri.
+          borderRadius: 0,
+          backgroundColor: "transparent",
           border: "none",
           borderWidth: 0,
-          boxShadow: theme.shadows[5],
+          boxShadow: "none",
           "--DataGrid-containerBackground": alpha(
             theme.palette.text.secondary,
             0.08
@@ -39,31 +40,32 @@ export default function DataGridOverrides(theme: Theme): Components {
             },
           },
 
+          ["& .MuiDataGrid-columnHeaderTitle"]: {
+            fontSize: "13px",
+            fontWeight: 700,
+            lineHeight: "22px",
+          },
           ["& .MuiDataGrid-cell"]: {
             "&:focus-within": {
               outline: "none",
             },
-          },
-          ["& .MuiDataGrid-columnHeaderTitle"]: {
-            fontSize: "17px",
-            fontWeight: 700,
-            lineHeight: "24px",
-          },
-          ["& .MuiDataGrid-cellContent"]: {
-            fontSize: "15px",
+            display: "flex",
+            alignItems: "center",
+            fontSize: "14px",
             fontWeight: 500,
             lineHeight: "22px",
           },
           ["& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell"]: {
-            paddingLeft: "16px",
-            paddingRight: "16px",
+            paddingLeft: "24px",
+            paddingRight: "12px",
           },
           ["& .MuiDataGrid-actionsCell .MuiIconButton-root"]: {
             padding: "8px",
             cursor: "pointer",
+            color: theme.palette.action.active,
           },
           ["& .MuiDataGrid-actionsCell svg"]: {
-            fontSize: "2.2rem",
+            fontSize: "2rem",
           },
           ["& .numeric-cell"]: {
             justifyContent: "flex-start",
@@ -75,7 +77,7 @@ export default function DataGridOverrides(theme: Theme): Components {
           },
           ["& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows"]:
             {
-              fontSize: "15px",
+              fontSize: "14px",
             },
           ["& .MuiTablePagination-select"]: {
             display: "flex",
@@ -102,19 +104,14 @@ export default function DataGridOverrides(theme: Theme): Components {
         },
         row: {
           color: theme.palette.text.primary,
-          fontSize: "15px",
+          fontSize: "14px",
           fontWeight: 400,
-          lineHeight: "24px",
+          lineHeight: "22px",
           border: "none",
-          minHeight: "72px",
-          "&:nth-of-type(odd)": {
-            backgroundColor: alpha(theme.palette.background.paper, 0.72),
-          },
-          "&:nth-of-type(even)": {
-            backgroundColor: alpha(theme.palette.background.paper, 0.96),
-          },
+          minHeight: "76px",
+          borderBottom: `1px dashed ${alpha(theme.palette.grey[500], 0.16)}`,
           "&:hover": {
-            backgroundColor: alpha(theme.palette.primary.main, 0.1),
+            backgroundColor: alpha(theme.palette.primary.main, 0.06),
           },
           "& .MuiDataGrid-cell": {
             border: "none",
@@ -127,9 +124,11 @@ export default function DataGridOverrides(theme: Theme): Components {
           color: alpha(theme.palette.text.secondary, 0.2),
         },
         footerContainer: {
-          backgroundColor: theme.palette.background.paper,
-          borderColor: alpha(theme.palette.text.secondary, 0.08),
-          fontSize: "16px",
+          backgroundColor: "transparent",
+          borderTop: "none",
+          paddingLeft: "12px",
+          paddingRight: "12px",
+          fontSize: "14px",
           "& svg": {
             fill: theme.palette.common.white,
           },

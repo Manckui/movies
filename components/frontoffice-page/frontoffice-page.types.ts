@@ -7,4 +7,10 @@ export interface IFrontOfficePageProps {
   breadcrumbs?: BreadcrumbItem[]
 
   title: string
+
+  /** Testo descrittivo sotto il titolo. */
+  subtitle?: string
+
+  /** Azioni allineate a destra dell'intestazione (es. pulsanti). */
+  action?: ReactNode
 }

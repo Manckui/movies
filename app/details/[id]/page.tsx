@@ -5,25 +5,78 @@ import { FrontOfficePage } from "@/components";
 import { useReviewsStore } from "@/hooks";
 import { REVIEW, ROOT } from "@/routes/paths";
 import { getMovieDetails, IMovieDetails } from "@/services";
+import { formatDate, RATING_LABELS, tmdbImage } from "@/utils";
 import {
   Alert,
+  alpha,
   Box,
   Button,
+  Card,
+  Chip,
   CircularProgress,
   Skeleton,
   Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
+import { SvgIconComponent } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import EditIcon from "@mui/icons-material/Edit";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import PaidIcon from "@mui/icons-material/Paid";
+import LanguageIcon from "@mui/icons-material/Language";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 interface IReviewFormValues {
   rating: number;
   text: string;
 }
+
+const formatMoney = (value?: number) =>
+  value
+    ? value.toLocaleString("it-IT", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      })
+    : "—";
+
+// Riquadro informativo (budget, incassi, ...).
+const InfoTile = ({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: SvgIconComponent;
+}) => (
+  <Stack
+    direction="row"
+    alignItems="center"
+    gap={1.75}
+    sx={{
+      p: 2,
+      borderRadius: "14px",
+      bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
+    }}
+  >
+    <Icon sx={{ color: "text.secondary" }} />
+    <Box>
+      <Typography variant="caption" color="text.secondary" component="div">
+        {label}
+      </Typography>
+      <Typography variant="subtitle1">{value}</Typography>
+    </Box>
+  </Stack>
+);
 
 export default function Details() {
   const { id } = useParams<{ id: string }>();
@@ -36,16 +89,19 @@ export default function Details() {
 
   // Recensioni  e form.
   const { reviews, saveReview } = useReviewsStore();
+  const existingReview = reviews.find((r) => r.movieId === Number(id));
   const reviewMethods = useForm<IReviewFormValues>({
     defaultValues: { rating: 0, text: "" },
   });
+  // Voto selezionato in tempo reale, per l'etichetta accanto alle stelle.
+  const rating = useWatch({ control: reviewMethods.control, name: "rating" });
 
   // Precompila la recensione esistente.
   useEffect(() => {
-    const existingReview = reviews.find((r) => r.movieId === Number(id));
+    const review = reviews.find((r) => r.movieId === Number(id));
     reviewMethods.reset({
-      rating: existingReview?.rating ?? 0,
-      text: existingReview?.text ?? "",
+      rating: review?.rating ?? 0,
+      text: review?.text ?? "",
     });
   }, [id, reviews, reviewMethods]);
 
@@ -70,28 +126,23 @@ export default function Details() {
 
   const breadcrumbItems = [
     { text: "Home", link: ROOT },
-    { text: movie?.title || "Dettaglio Movie" },
+    { text: "Movies", link: ROOT },
+    { text: movie?.title || "Dettaglio film" },
   ];
 
-  // Immagini con riserva.
-  const backdropUrl = movie?.backdrop_path
-    ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
-    : "/placeholder.jpg";
-
-  const posterUrl = movie?.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : "/placeholder.jpg";
-
+  const backdropUrl = tmdbImage(movie?.backdrop_path, "w1280");
+  const posterUrl = tmdbImage(movie?.poster_path);
   // Sito ufficiale o IMDb.
   const websiteUrl =
     movie?.homepage ||
     (movie?.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : "");
+  const score = Math.round((movie?.vote_average || 0) * 10);
 
   // Salva la recensione e apre la lista.
   const onSubmitReview = (data: IReviewFormValues) => {
     if (!movie) return;
 
-    const newReview = {
+    saveReview({
       movieId: Number(id),
       rating: data.rating,
       text: data.text,
@@ -101,15 +152,28 @@ export default function Details() {
       original_language: movie.original_language,
       vote_count: movie.vote_count,
       vote_average: movie.vote_average,
-    };
-    saveReview(newReview);
+    });
     setShowSavedToast(true);
-    reviewMethods.reset();
     setTimeout(() => router.push(REVIEW), 800);
   };
 
   return (
-    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Dettaglio Movie">
+    <FrontOfficePage
+      breadcrumbs={breadcrumbItems}
+      title="Dettaglio film"
+      subtitle="Informazioni complete e la tua recensione personale."
+      action={
+        <Button
+          component={Link}
+          href={ROOT}
+          variant="outlined"
+          color="inherit"
+          startIcon={<ArrowBackIcon />}
+        >
+          Torna ai film
+        </Button>
+      }
+    >
       <Snackbar
         open={showSavedToast}
         autoHideDuration={4000}
@@ -122,242 +186,255 @@ export default function Details() {
       </Snackbar>
 
       {isLoading ? (
-        <Stack gap={2}>
-          <Skeleton variant="rectangular" width="100%" height={320} />
-          <Skeleton variant="text" width="40%" height={45} />
-          <Skeleton variant="text" width="100%" height={120} />
+        <Stack gap={3}>
+          <Skeleton variant="rounded" width="100%" height={420} sx={{ borderRadius: "24px" }} />
+          <Stack direction={{ xs: "column", md: "row" }} gap={3}>
+            <Skeleton variant="rounded" height={260} sx={{ flex: 1.25, borderRadius: "20px" }} />
+            <Skeleton variant="rounded" height={260} sx={{ flex: 1, borderRadius: "20px" }} />
+          </Stack>
         </Stack>
-      ) : fetchError ? (
+      ) : fetchError || !movie ? (
         <Alert severity="error">{fetchError}</Alert>
       ) : (
-        <Stack
-          sx={{
-            position: "relative",
-            backgroundColor: "#f5f5f5",
-            borderRadius: 10,
-            overflow: "hidden",
-            borderBottomLeftRadius: 4,
-            borderBottomRightRadius: 4,
-          }}
-        >
+        <>
+          {/* Hero */}
           <Box
             sx={{
               position: "relative",
-              width: "100%",
-              height: 360,
-              borderRadius: 2,
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
+              borderRadius: "24px",
               overflow: "hidden",
+              minHeight: 420,
+              bgcolor: "background.paper",
             }}
           >
             <Image
               src={backdropUrl}
-              alt={movie?.title || "Backdrop"}
+              alt=""
               fill
               sizes="(max-width: 900px) 100vw, 75vw"
               style={{ objectFit: "cover" }}
               priority
             />
             <Box
-              sx={{
+              sx={(theme) => ({
                 position: "absolute",
                 inset: 0,
-                backgroundColor: "rgba(0,0,0,0.45)",
-              }}
+                background: {
+                  xs: alpha(theme.palette.background.default, 0.85),
+                  md: `linear-gradient(90deg, ${alpha(theme.palette.background.default, 0.95)} 0%, ${alpha(theme.palette.background.default, 0.7)} 45%, ${alpha(theme.palette.background.default, 0.2)} 100%)`,
+                },
+              })}
             />
-          </Box>
-
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            gap={3}
-            alignItems={{ xs: "center", md: "flex-start" }}
-            sx={{
-              position: { xs: "static", md: "absolute" },
-              top: 24,
-              left: 20,
-              right: 20,
-              px: { xs: 2, md: 0 },
-              mt: { xs: -30, md: 0 },
-            }}
-          >
-            <Box
-              sx={{
-                width: { xs: 220, md: 441 },
-                height: { xs: 310, md: 616 },
-                borderRadius: 2,
-                overflow: "hidden",
-                boxShadow: 4,
-                flexShrink: 0,
-                zIndex: 1,
-              }}
-            >
-              <Image
-                src={posterUrl}
-                alt={movie?.title || "Poster"}
-                width={441}
-                height={600}
-                sizes="(max-width: 899px) 220px, 441px"
-                priority
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </Box>
 
             <Stack
-              gap={2}
-              sx={{
-                flex: 1,
-                width: "100%",
-                color: { xs: "#212B36", md: "#fff" },
-              }}
+              direction={{ xs: "column", md: "row" }}
+              gap={5}
+              alignItems={{ xs: "center", md: "flex-start" }}
+              sx={{ position: "relative", p: { xs: 3, md: 6 } }}
             >
-              <Box>
-                <Stack
-                  direction="row"
-                  gap={1}
-                  alignItems="center"
-                  flexWrap="wrap"
-                >
-                  <Typography variant="h3">{movie?.title}</Typography>
-                  <Typography variant="h3" color="text.secondary">
-                    {movie?.release_date?.split("-")[0]}
-                  </Typography>
-                </Stack>
-                <Stack
-                  direction="row"
-                  gap={1}
-                  alignItems="center"
-                  flexWrap="wrap"
-                >
-                  <Typography variant="caption">
-                    {movie?.release_date
-                      ? new Date(movie.release_date).toLocaleDateString(
-                          "it-IT",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }
-                        )
-                      : ""}
-                  </Typography>
-                  <Typography variant="caption">|</Typography>
-                  <Typography variant="caption">
-                    {movie?.genres.map((genre) => genre.name).join(", ")}
-                  </Typography>
-                </Stack>
-              </Box>
-
-              <Stack
-                direction="row"
-                gap={2}
-                alignItems="center"
-                sx={{ my: "20px" }}
+              <Box
+                sx={{
+                  position: "relative",
+                  width: { xs: 180, md: 220 },
+                  height: { xs: 260, md: 320 },
+                  flexShrink: 0,
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  boxShadow: 12,
+                }}
               >
-                <Box sx={{ position: "relative", display: "inline-flex" }}>
-                  <CircularProgress
-                    variant="determinate"
-                    value={(movie?.vote_average || 0) * 10}
-                    size={64}
-                    thickness={4}
-                    sx={{ color: "success.main" }}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography variant="subtitle2">
-                      {Math.round((movie?.vote_average || 0) * 10)}%
-                    </Typography>
-                  </Box>
-                </Box>
-                <Typography variant="subtitle2">Average Point</Typography>
-              </Stack>
-
-              <Box>
-                <Typography variant="subtitle2">Descrizione</Typography>
-                <Typography variant="body2">{movie?.overview}</Typography>
-              </Box>
-            </Stack>
-          </Stack>
-
-          <FormProvider
-            methods={reviewMethods}
-            onSubmit={reviewMethods.handleSubmit(onSubmitReview)}
-          >
-            <Box
-              sx={{
-                pl: { xs: "20px", md: "489px" },
-                pr: "20px",
-                pt: 3,
-                color: "#212B36",
-                "& .MuiInputBase-input": { color: "#212B36" },
-                "& .MuiFormLabel-root": { color: "#637381" },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#DFE3E8",
-                },
-              }}
-            >
-              <Typography variant="h5" sx={{ mb: 4 }}>
-                Review
-              </Typography>
-
-              <Box sx={{ mb: 3 }}>
-                <RHFRating
-                  name="rating"
-                  label="Vote (1-5)"
-                  max={5}
-                  rules={{
-                    validate: (value) => value > 0 || "Seleziona un voto",
-                  }}
+                <Image
+                  src={posterUrl}
+                  alt={movie.title}
+                  fill
+                  sizes="220px"
+                  style={{ objectFit: "cover" }}
+                  priority
                 />
               </Box>
 
-              <RHFTextField
-                name="text"
-                label="Message"
-                placeholder="Scrivi qui la tua recensione..."
-                multiline
-                minRows={4}
-                fullWidth
-                rules={{ required: "Il testo della recensione è obbligatorio" }}
-              />
-            </Box>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ mt: 5, pb: 5, pl: 2, pr: 2 }}
-            >
-              <Button
-                component="a"
-                href={websiteUrl || undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="contained"
-                color="info"
-                disabled={!websiteUrl}
-                sx={{ width: "120px" }}
-              >
-                Vai al sito
-              </Button>
+              <Stack gap={2} sx={{ flex: 1, width: "100%", pt: { md: 1 } }}>
+                <Stack direction="row" gap={1} flexWrap="wrap">
+                  {movie.genres.map((genre) => (
+                    <Chip
+                      key={genre.id}
+                      label={genre.name}
+                      size="small"
+                      sx={(theme) => ({
+                        borderRadius: 20,
+                        color: "common.white",
+                        bgcolor: alpha(theme.palette.common.white, 0.14),
+                        border: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
+                      })}
+                    />
+                  ))}
+                </Stack>
 
-              <Button
-                type="submit"
-                variant="contained"
-                color="success"
-                sx={{ width: "120px" }}
-              >
-                Salva
-              </Button>
+                <Typography
+                  component="h2"
+                  sx={{ typography: { xs: "h3", md: "displayLarge" } }}
+                >
+                  {movie.title}{" "}
+                  <Box component="span" sx={{ fontWeight: 400, color: "grey.400" }}>
+                    ({movie.release_date?.split("-")[0]})
+                  </Box>
+                </Typography>
+
+                <Typography variant="body2" color="grey.300">
+                  {formatDate(movie.release_date)} • {movie.status}
+                </Typography>
+
+                {movie.tagline && (
+                  <Typography sx={{ fontStyle: "italic", color: "grey.300", fontSize: 16 }}>
+                    “{movie.tagline}”
+                  </Typography>
+                )}
+
+                <Stack direction="row" alignItems="center" gap={1.75}>
+                  <Box sx={{ position: "relative", display: "inline-flex" }}>
+                    <CircularProgress
+                      variant="determinate"
+                      value={score}
+                      size={76}
+                      thickness={5}
+                      color="success"
+                    />
+                    <Stack
+                      alignItems="center"
+                      justifyContent="center"
+                      sx={{ position: "absolute", inset: 0 }}
+                    >
+                      <Typography variant="h6" component="span">
+                        {score}%
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle1">Punteggio TMDB</Typography>
+                    <Typography variant="body2" color="grey.400">
+                      {movie.vote_count.toLocaleString("it-IT")} voti
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                {websiteUrl && (
+                  <Box sx={{ mt: 1 }}>
+                    <Button
+                      component="a"
+                      href={websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="contained"
+                      color="info"
+                      startIcon={<OpenInNewIcon />}
+                    >
+                      Vai al sito
+                    </Button>
+                  </Box>
+                )}
+              </Stack>
             </Stack>
-          </FormProvider>
-        </Stack>
+          </Box>
+
+          {/* Colonne della stessa altezza: la card recensione segue le due card a sinistra. */}
+          <Stack direction={{ xs: "column", md: "row" }} gap={3} alignItems="stretch">
+            <Stack gap={3} sx={{ flex: 1.25, width: "100%" }}>
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 1.5 }}>
+                  Trama
+                </Typography>
+                <Typography color="grey.400" sx={{ fontSize: 15, lineHeight: "26px" }}>
+                  {movie.overview || "Trama non disponibile."}
+                </Typography>
+              </Card>
+
+              <Card sx={{ p: 3, flex: 1 }}>
+                <Typography variant="h6" sx={{ mb: 1.5 }}>
+                  Informazioni
+                </Typography>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                    gap: 2,
+                  }}
+                >
+                  <InfoTile label="Budget" value={formatMoney(movie.budget)} icon={PaidIcon} />
+                  <InfoTile label="Incassi" value={formatMoney(movie.revenue)} icon={TrendingUpIcon} />
+                  <InfoTile label="Durata" value={movie.runtime ? `${movie.runtime} minuti` : "—"} icon={ScheduleIcon} />
+                  <InfoTile label="Lingua originale" value={movie.original_language.toUpperCase()} icon={LanguageIcon} />
+                </Box>
+              </Card>
+            </Stack>
+
+            {/* Recensione */}
+            <Card
+              sx={{
+                flex: 1,
+                width: "100%",
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
+                // Il form riempie la card: i pulsanti restano in fondo.
+                "& > form": { flex: 1, display: "flex", flexDirection: "column" },
+              }}
+            >
+              <FormProvider
+                methods={reviewMethods}
+                onSubmit={reviewMethods.handleSubmit(onSubmitReview)}
+              >
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="h6">La tua recensione</Typography>
+                  {existingReview && (
+                    <Chip icon={<CheckCircleIcon />} label="Salvata" size="small" color="success" />
+                  )}
+                </Stack>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Dai un voto da 1 a 5 e racconta cosa ne pensi.
+                </Typography>
+
+                <Stack direction="row" alignItems="center" gap={1.75} sx={{ mb: 3.5 }}>
+                  <RHFRating
+                    name="rating"
+                    label="Voto *"
+                    max={5}
+                    rules={{
+                      validate: (value) => value > 0 || "Seleziona un voto",
+                    }}
+                  />
+                  {rating > 0 && (
+                    <Chip
+                      label={RATING_LABELS[rating]}
+                      size="small"
+                      color="warning"
+                      sx={{ mt: 2.5 }}
+                    />
+                  )}
+                </Stack>
+
+                <RHFTextField
+                  name="text"
+                  label="Messaggio *"
+                  placeholder="Scrivi qui la tua recensione..."
+                  multiline
+                  minRows={5}
+                  fullWidth
+                  rules={{ required: "Il testo della recensione è obbligatorio" }}
+                />
+
+                <Stack direction="row" justifyContent="flex-end" sx={{ mt: "auto", pt: 3.5 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    startIcon={existingReview ? <EditIcon /> : <CheckCircleIcon />}
+                  >
+                    {existingReview ? "Modifica recensione" : "Salva recensione"}
+                  </Button>
+                </Stack>
+              </FormProvider>
+            </Card>
+          </Stack>
+        </>
       )}
     </FrontOfficePage>
   );

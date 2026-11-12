@@ -20,7 +20,7 @@ const yearOptions = [
 ];
 
 const languageOptions = [
-  { value: "all", label: "All" },
+  { value: "all", label: "Tutte" },
   { value: "en", label: "English" },
   { value: "it", label: "Italiano" },
   { value: "es", label: "Espanol" },
@@ -97,7 +97,7 @@ const MoviesTableFilters = ({
   }, [debouncedTitle, onChange, watched.language, watched.year]);
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box>
       <FormProvider methods={methods}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, md: 6 }}>
@@ -105,13 +105,13 @@ const MoviesTableFilters = ({
               name="title"
               options={titleOptions}
               textFieldProps={{
-                placeholder: "Insert the name of the movie",
+                placeholder: "Inserisci il titolo del film",
                 sx: autocompleteFieldSx,
                 slotProps: {
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">
-                        <SearchIcon sx={{ color: "#637381" }} />
+                        <SearchIcon sx={{ color: "text.disabled" }} />
                       </InputAdornment>
                     ),
                   },
@@ -123,7 +123,7 @@ const MoviesTableFilters = ({
           <Grid2 size={{ xs: 12, md: 3 }}>
             <RHFSelect
               name="year"
-              label="Year"
+              label="Anno"
               options={yearOptions}
               sx={selectFieldSx}
             />
@@ -132,7 +132,7 @@ const MoviesTableFilters = ({
           <Grid2 size={{ xs: 12, md: 3 }}>
             <RHFSelect
               name="language"
-              label="Language"
+              label="Lingua"
               options={languageOptions}
               sx={selectFieldSx}
             />

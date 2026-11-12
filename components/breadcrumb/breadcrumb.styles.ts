@@ -8,6 +8,6 @@ export const BreadcrumbsCustomStyles = styled(Breadcrumbs)(({ theme }) => ({
     borderRadius: "50%",
     backgroundColor: theme.palette.text.disabled,
     display: "inline-block",
-    margin: theme.spacing(0, 2)
+    margin: theme.spacing(0, 1.25)
   }
 }))

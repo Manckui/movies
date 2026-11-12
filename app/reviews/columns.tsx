@@ -3,101 +3,73 @@ import {
   GridColDef,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { Stack, Theme, Tooltip, Typography } from "@mui/material";
-import Image from "next/image";
+import { Rating, Tooltip, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { MOVIE_DETAILS } from "@/routes";
 import { useRouter } from "next/navigation";
+import { MovieTitleCell, ScoreCell } from "@/components";
 
 export const reviewsColumns = (
-  theme: Theme,
-  router: ReturnType<typeof useRouter>
+  router: ReturnType<typeof useRouter>,
+  onDelete: (movieId: number) => void
 ): GridColDef[] => [
   {
     field: "title",
     headerName: "Film",
     flex: 2,
-    renderCell: (params) => {
-      const { row } = params;
-      const imageUrl = row.poster_path
-        ? `https://image.tmdb.org/t/p/w500${row.poster_path}`
-        : "/placeholder.jpg";
-      return (
-        <Stack
-          direction={"row"}
-          alignItems={"center"}
-          gap={2}
-          sx={{ height: "100%" }}
-        >
-          <Image
-            src={imageUrl}
-            width={56}
-            height={56}
-            alt={row.title}
-            style={{
-              borderRadius: "100%",
-              objectFit: "cover",
-              width: 56,
-              height: 56,
-              minWidth: 56,
-              minHeight: 56,
-            }}
-            priority={false}
-          />
-          <Typography variant="subtitle1">{row.title}</Typography>
-        </Stack>
-      );
-    },
-  },
-  { field: "release_date", headerName: "Data di Uscita", flex: 1 },
-  { field: "original_language", headerName: "Lingua Originale", flex: 1 },
-  {
-    field: "vote_count",
-    headerName: "Totale Recensioni",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
+    minWidth: 240,
+    renderCell: ({ row }) => (
+      <MovieTitleCell
+        title={row.title}
+        posterPath={row.poster_path}
+        subtitle={`${row.release_date?.split("-")[0] ?? ""} · ${String(
+          row.original_language
+        ).toUpperCase()}`}
+      />
+    ),
   },
   {
-    field: "vote_average",
-    headerName: "Media Recensioni",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    valueFormatter: (value?: number) =>
-      value !== undefined && value !== null ? Math.round(value) : value,
-  },
-  {
-    field: "app_review_count",
-    headerName: "Numero Recensioni App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
+    field: "text",
+    headerName: "Recensione",
+    flex: 2.6,
+    minWidth: 220,
     sortable: false,
-    filterable: false,
-    renderCell: () => 1, /// todo da modificare con il numero delle recensioni del film appena c'è back di tutta app
-  },
-  {
-    field: "app_review_average",
-    headerName: "Punteggio App",
-    flex: 1,
-    type: "number",
-    align: "left",
-    headerAlign: "left",
-    sortable: false,
-    filterable: false,
-    renderCell: (params) => params.row.myRating, /// todo da modificare con la media delle recensioni del film appena c'è back di tutta app
+    renderCell: ({ value }) => (
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        title={value}
+        sx={{
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          whiteSpace: "normal",
+          lineHeight: "20px",
+        }}
+      >
+        {value}
+      </Typography>
+    ),
   },
   {
     field: "myRating",
-    headerName: "Il Mio Voto",
-    flex: 1,
+    headerName: "Il mio voto",
+    flex: 1.1,
     type: "number",
     align: "left",
     headerAlign: "left",
+    renderCell: ({ value }) => <Rating value={value} readOnly size="small" />,
+  },
+  {
+    field: "vote_average",
+    headerName: "Media TMDB",
+    flex: 1.1,
+    type: "number",
+    align: "left",
+    headerAlign: "left",
+    renderCell: ({ value }) => <ScoreCell value={value} />,
   },
   {
     field: "config",
@@ -105,21 +77,23 @@ export const reviewsColumns = (
     type: "actions",
     headerAlign: "right",
     align: "right",
-    minWidth: 120,
+    minWidth: 110,
     getActions: (params: GridRowParams) => {
       const id = params.row.id;
 
       return [
         <Tooltip title="Dettagli" placement="top" key={`details-review-${id}`}>
           <GridActionsCellItem
-            icon={
-              <VisibilityIcon
-                sx={{ color: theme.palette.text.primary, fontSize: "2.4rem" }}
-              />
-            }
+            icon={<VisibilityIcon />}
             label="Dettagli"
-            sx={{ cursor: "pointer" }}
             onClick={() => router.push(MOVIE_DETAILS(id))}
+          />
+        </Tooltip>,
+        <Tooltip title="Elimina" placement="top" key={`delete-review-${id}`}>
+          <GridActionsCellItem
+            icon={<DeleteIcon color="error" />}
+            label="Elimina"
+            onClick={() => onDelete(id)}
           />
         </Tooltip>,
       ];

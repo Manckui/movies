@@ -13,7 +13,7 @@ import { LandingSkeleton } from './skeleton/landing-skeleton';
 import { useLandingSkeleton } from './skeleton/use-landing-skeleton';
 
 
-const ROW_HEIGHT = 72;
+const ROW_HEIGHT = 76;
 
 const Table = (props: ITableProps) => {
   const {
@@ -45,10 +45,10 @@ const Table = (props: ITableProps) => {
           <Typography
             fontWeight="var(--unstable_DataGrid-headWeight)"
             variant="body2"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 17 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
           >
             {params.colDef.headerName}
-            <SortIcon style={{ opacity: 0.45, fontSize: 18 }} />
+            <SortIcon style={{ opacity: 0.45, fontSize: 16 }} />
           </Typography>
         )
       : undefined,
@@ -70,7 +70,7 @@ const Table = (props: ITableProps) => {
         pageSizeOptions={pageSizeOptions}
         initialState={{ pagination: { paginationModel: { pageSize: 20 } } }}
         rowHeight={ROW_HEIGHT}
-        columnHeaderHeight={68}
+        columnHeaderHeight={52}
         keepNonExistentRowsSelected
         slots={{
           loadingOverlay: TableLoadingOverlay,
@@ -85,7 +85,11 @@ const Table = (props: ITableProps) => {
           ...localeText,
         }}
         slotProps={{
-          pagination: { labelRowsPerPage: "Righe per pagina" },
+          pagination: {
+            labelRowsPerPage: "Righe per pagina",
+            labelDisplayedRows: ({ from, to, count }) =>
+              `${from}–${to} di ${count !== -1 ? count.toLocaleString("it-IT") : `più di ${to}`}`,
+          },
           ...slotProps,
           loadingOverlay: {
             cols: enhancedColumns.length,

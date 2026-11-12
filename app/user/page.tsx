@@ -2,23 +2,27 @@
 
 import { FormProvider, RHFTextField } from "@/components/form";
 import { FrontOfficePage } from "@/components";
-import { useUserStore } from "@/hooks";
+import { getAverageRating, useReviewsStore, useUserStore } from "@/hooks";
 import { ROOT } from "@/routes/paths";
 import {
   Alert,
   Avatar,
   Box,
   Button,
+  Card,
   Divider,
   IconButton,
+  InputAdornment,
   Snackbar,
   Stack,
   Typography,
-  useTheme,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 interface IProfileFormValues {
   name: string;
@@ -29,10 +33,11 @@ interface IProfileFormValues {
 }
 
 export default function User() {
-  const theme = useTheme();
   const { user, updateUser } = useUserStore();
+  const { reviews } = useReviewsStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSavedToast, setShowSavedToast] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
 
   const methods = useForm<IProfileFormValues>({
     defaultValues: {
@@ -44,8 +49,19 @@ export default function User() {
     },
   });
 
-  const avatarUrl = methods.watch("avatarUrl");
-  const name = methods.watch("name");
+  const [avatarUrl, name] = useWatch({
+    control: methods.control,
+    name: ["avatarUrl", "name"],
+  });
+
+  const resetForm = () =>
+    methods.reset({
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
 
   useEffect(() => {
     methods.reset({
@@ -91,14 +107,37 @@ export default function User() {
 
   const breadcrumbItems = [{ text: "Home", link: ROOT }, { text: "Profilo" }];
 
-  const cardSx = {
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: 3,
-    p: 4,
+  const passwordSlotProps = {
+    input: {
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton
+            size="small"
+            aria-label={showPasswords ? "Nascondi password" : "Mostra password"}
+            onClick={() => setShowPasswords((prev) => !prev)}
+          >
+            {showPasswords ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    },
   };
+  const passwordType = showPasswords ? "text" : "password";
+
+  const stats = [
+    { label: "Recensioni", value: reviews.length },
+    {
+      label: "Voto medio",
+      value: getAverageRating(reviews).toLocaleString("it-IT"),
+    },
+  ];
 
   return (
-    <FrontOfficePage breadcrumbs={breadcrumbItems} title="Profilo">
+    <FrontOfficePage
+      breadcrumbs={breadcrumbItems}
+      title="Profilo"
+      subtitle="Gestisci i dati del tuo account e la sicurezza."
+    >
       <Snackbar
         open={showSavedToast}
         autoHideDuration={4000}
@@ -110,99 +149,148 @@ export default function User() {
         </Alert>
       </Snackbar>
 
-      <FormProvider methods={methods} onSubmit={methods.handleSubmit(onSubmit)}>
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          gap={3}
-          alignItems="stretch"
-        >
-          <Stack
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
-            sx={{ ...cardSx, flex: 1, textAlign: "center" }}
-          >
-            <Box sx={{ position: "relative" }}>
-              <Avatar
-                src={avatarUrl}
-                sx={{
-                  width: 140,
-                  height: 140,
-                }}
-              />
-              <IconButton
-                onClick={() => fileInputRef.current?.click()}
-                sx={{
-                  position: "absolute",
-                  right: 4,
-                  bottom: 4,
-                  backgroundColor: "background.paper",
-                  boxShadow: 2,
-                }}
-              >
-                <PhotoCameraIcon fontSize="small" />
-              </IconButton>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleAvatarChange}
-              />
-            </Box>
-            <Typography variant="h5">{name}</Typography>
-          </Stack>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={handleAvatarChange}
+      />
 
-          <Stack gap={4} sx={{ ...cardSx, flex: 2 }}>
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Dati Account
+      <FormProvider methods={methods} onSubmit={methods.handleSubmit(onSubmit)}>
+        <Stack gap={3}>
+          {/* Copertina e riepilogo */}
+          <Card sx={{ overflow: "hidden" }}>
+            <Box
+              sx={(theme) => ({
+                height: 160,
+                background: `linear-gradient(120deg, ${theme.palette.primary.dark} 0%, ${theme.palette.info.main} 55%, ${theme.palette.info.dark} 100%)`,
+              })}
+            />
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              alignItems={{ xs: "center", sm: "flex-end" }}
+              gap={3}
+              sx={{ px: 4, pb: 3, mt: "-56px" }}
+            >
+              <Box sx={{ position: "relative" }}>
+                <Avatar
+                  src={avatarUrl}
+                  sx={{
+                    width: 128,
+                    height: 128,
+                    border: 4,
+                    borderColor: "background.paper",
+                  }}
+                />
+                <IconButton
+                  aria-label="Cambia foto profilo"
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={{
+                    position: "absolute",
+                    right: 4,
+                    bottom: 6,
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    border: 3,
+                    borderColor: "background.paper",
+                    bgcolor: "primary.main",
+                    color: "common.white",
+                    "&:hover": { bgcolor: "primary.dark" },
+                  }}
+                >
+                  <PhotoCameraIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Box>
+              <Box sx={{ flex: 1, pb: 1, textAlign: { xs: "center", sm: "left" } }}>
+                <Typography variant="h4">{name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Admin
+                </Typography>
+              </Box>
+              <Stack direction="row" gap={4} sx={{ pb: 1 }}>
+                {stats.map((stat) => (
+                  <Stack key={stat.label} alignItems="center">
+                    <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                      {stat.value}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {stat.label}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            </Stack>
+          </Card>
+
+          <Stack direction={{ xs: "column", md: "row" }} gap={3} alignItems="flex-start">
+            {/* Dati account */}
+            <Card sx={{ flex: 1, width: "100%", p: 3 }}>
+              <Typography variant="h6">Dati account</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Nome visualizzato nella sidebar e nelle recensioni.
               </Typography>
               <RHFTextField
                 name="name"
-                label="Nome Utente"
+                label="Nome utente *"
                 fullWidth
                 rules={{ required: "Il nome è obbligatorio" }}
               />
-            </Box>
+            </Card>
 
-            <Divider />
-
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Cambia Password
+            {/* Password */}
+            <Card sx={{ flex: 1.4, width: "100%", p: 3 }}>
+              <Typography variant="h6">Cambia password</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Lascia vuoti i campi se non vuoi modificarla.
               </Typography>
-              <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
+              <Stack gap={2.5}>
                 <RHFTextField
                   name="currentPassword"
-                  label="Password Attuale"
-                  type="password"
+                  label="Password attuale"
+                  type={passwordType}
                   fullWidth
+                  slotProps={passwordSlotProps}
                 />
-                <RHFTextField
-                  name="newPassword"
-                  label="Nuova Password"
-                  type="password"
-                  fullWidth
-                  rules={{
-                    validate: (value) =>
-                      !value || value.length >= 6 || "Minimo 6 caratteri",
-                  }}
-                />
-                <RHFTextField
-                  name="confirmPassword"
-                  label="Conferma Nuova Password"
-                  type="password"
-                  fullWidth
-                />
+                <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
+                  <RHFTextField
+                    name="newPassword"
+                    label="Nuova password"
+                    type={passwordType}
+                    fullWidth
+                    helperText="Minimo 6 caratteri"
+                    slotProps={passwordSlotProps}
+                    rules={{
+                      validate: (value) =>
+                        !value || value.length >= 6 || "Minimo 6 caratteri",
+                    }}
+                  />
+                  <RHFTextField
+                    name="confirmPassword"
+                    label="Conferma nuova password"
+                    type={passwordType}
+                    fullWidth
+                    slotProps={passwordSlotProps}
+                  />
+                </Stack>
               </Stack>
-            </Box>
 
-            <Stack direction="row" justifyContent="flex-end">
-              <Button type="submit" variant="contained" color="success">
-                Salva Modifiche
-              </Button>
-            </Stack>
+              <Divider sx={{ my: 3, borderStyle: "dashed" }} />
+
+              <Stack direction="row" justifyContent="flex-end" gap={1.5}>
+                <Button variant="outlined" color="inherit" onClick={resetForm}>
+                  Annulla
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<CheckCircleIcon />}
+                >
+                  Salva modifiche
+                </Button>
+              </Stack>
+            </Card>
           </Stack>
         </Stack>
       </FormProvider>

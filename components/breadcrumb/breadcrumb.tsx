@@ -11,36 +11,27 @@ const BreadcrumbsCustom = ({ items }: BreadcrumbsCustomProps) => {
   return (
     <BreadcrumbsCustomStyles separator={<span></span>} aria-label="breadcrumb">
       {items.map((item, index) => {
-        if (item?.link) {
+        const isLast = index === items.length - 1
+        const style = {
+          ...theme.typography.body2,
+          textDecoration: "none",
+          color: isLast ? theme.palette.text.primary : theme.palette.text.secondary,
+          fontWeight: isLast ? 600 : 400
+        }
+
+        if (item?.link && !isLast) {
           return (
-            <Link
-              key={index}
-              href={item.link || "/"}
-              style={{
-                textDecoration: "none",
-                color:
-                  items.length === 1
-                    ? theme.palette.text.disabled
-                    : index === items.length - 1
-                      ? theme.palette.text.disabled
-                      : theme.palette.text.primary,
-                ...theme.typography.subtitle2
-              }}>
+            <Link key={index} href={item.link} style={style}>
               {item.text}
             </Link>
           )
-        } else {
-          return (
-            <span
-              key={index}
-              style={{
-                color: theme.palette.text.disabled,
-                ...theme.typography.subtitle2
-              }}>
-              {item.text}
-            </span>
-          )
         }
+
+        return (
+          <span key={index} style={style} aria-current={isLast ? "page" : undefined}>
+            {item.text}
+          </span>
+        )
       })}
     </BreadcrumbsCustomStyles>
   )

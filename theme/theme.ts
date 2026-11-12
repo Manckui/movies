@@ -11,8 +11,18 @@ const theme = createTheme({
     secondary: {
       main: "#ff4081",
     },
-    info: { main: "#00B8D9", dark: "#006C9C" },
-    warning: { main: "#FFAB00", dark: "#B76E00" },
+    info: { light: "#61F3F3", main: "#00B8D9", dark: "#006C9C" },
+    success: { light: "#77ED8B", main: "#22C55E", dark: "#118D57" },
+    warning: { light: "#FFD666", main: "#FFAB00", dark: "#B76E00" },
+    error: { light: "#FFAC82", main: "#FF5630", dark: "#B71D18" },
+    // Tema scuro senza mode "dark": le icone (IconButton, azioni DataGrid) devono essere chiare.
+    action: {
+      active: "#C4CDD5",
+      hover: "rgba(145, 158, 171, 0.08)",
+      selected: "rgba(145, 158, 171, 0.16)",
+      disabled: "rgba(145, 158, 171, 0.8)",
+      disabledBackground: "rgba(145, 158, 171, 0.24)",
+    },
     background: {
       default: "#161c24",
       paper: "#212B36",
@@ -35,7 +45,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Public Sans, sans-serif",
+    fontFamily: "var(--font-public-sans), Public Sans, sans-serif",
     h1: {
       fontSize: "42px",
       fontWeight: 700,
@@ -48,7 +58,7 @@ const theme = createTheme({
     },
     h3: {
       fontSize: "32px",
-      fontWeight: 700,
+      fontWeight: 800,
       lineHeight: "48px",
     },
     h4: {
