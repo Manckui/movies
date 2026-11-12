@@ -34,7 +34,7 @@ export default function Details() {
   const [fetchError, setFetchError] = useState<string>();
   const [showSavedToast, setShowSavedToast] = useState(false);
 
-  const { reviews, addReview } = useReviewsStore();
+  const { reviews, saveReview } = useReviewsStore();
   const reviewMethods = useForm<IReviewFormValues>({
     defaultValues: { rating: 0, text: "" },
   });
@@ -97,7 +97,7 @@ export default function Details() {
       vote_count: movie.vote_count,
       vote_average: movie.vote_average,
     };
-    addReview(newReview);
+    saveReview(newReview);
     setShowSavedToast(true);
     reviewMethods.reset();
     setTimeout(() => router.push(REVIEW), 800);
