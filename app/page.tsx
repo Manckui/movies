@@ -27,7 +27,7 @@ export default function Movies() {
   const { tableProps, tableState, setTableState } =
     useTable<IMoviesTableFilters>({
       page: 1,
-      pageSize: 10,
+      pageSize: 20,
       title: "",
       year: "all",
       language: "all",
@@ -87,6 +87,11 @@ export default function Movies() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState]);
 
+  const hasFilters =
+    !!filters.title.trim() || filters.year !== "all" || filters.language !== "all";
+  const hasLocalLanguageFilter =
+    !!filters.title.trim() && filters.language !== "all";
+
   return (
     <FrontOfficePage breadcrumbs={breadcrumbItems} title="Movies">
       <MoviesTableFilters
@@ -101,12 +106,14 @@ export default function Movies() {
           color={theme.palette.info.dark}
           icon={EditIcon}
         />
-        <MetricCard
-          value={movies?.count ?? 0}
-          label="Totale Film"
-          color={theme.palette.success.dark}
-          icon={MovieIcon}
-        />
+        {!hasFilters && (
+          <MetricCard
+            value={movies?.count ?? 0}
+            label="Totale Film"
+            color={theme.palette.success.dark}
+            icon={MovieIcon}
+          />
+        )}
       </Stack>
       {fetchError ? (
         <Alert
@@ -124,6 +131,7 @@ export default function Movies() {
           columns={moviesColumns(theme, router, reviews)}
           data={movies}
           loading={isLoading}
+          hideFooter={hasLocalLanguageFilter}
           {...tableProps}
         />
       )}

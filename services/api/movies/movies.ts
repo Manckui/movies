@@ -11,7 +11,7 @@ export const getMoviesList = async (
   params: QueryParamsObj
 ): Promise<IPaginatedList<IMovie>> => {
   const page = params.page || 1;
-  const pageSize = params.pageSize || 10;
+  const pageSize = params.pageSize || 20;
   const moviesPerRequest = 20;
   const title = String(params.title || "").trim();
   const year =

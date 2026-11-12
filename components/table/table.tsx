@@ -31,7 +31,7 @@ const Table = (props: ITableProps) => {
     ...restProps
   } = props;
 
-  const pageSizeOptions = [5, 10, 15, 20, 50];
+  const pageSizeOptions = [20];
 
   const actualRows = data?.items || rows || [];
   const paginationMode = restProps.paginationMode ?? 'server';
@@ -73,6 +73,7 @@ const Table = (props: ITableProps) => {
         disableColumnMenu
         disableRowSelectionOnClick
         pageSizeOptions={pageSizeOptions}
+        initialState={{ pagination: { paginationModel: { pageSize: 20 } } }}
         rowHeight={ROW_HEIGHT}
         columnHeaderHeight={68}
         keepNonExistentRowsSelected

@@ -11,7 +11,7 @@ export declare enum SortOrder {
 }
 
 
-export const tablePageSizeOption = [10, 25, 50];
+export const tablePageSizeOption = [20];
 
 
 // utils/global.ts (o in un file simile)

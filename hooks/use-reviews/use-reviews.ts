@@ -33,6 +33,11 @@ export const useReviewsStore = create<IReviewsStore>()(
 
       setEditingReview: (review) => set({ editingReview: review }),
     }),
-    { name: 'movie-reviews' }
+    {
+      name: 'movie-reviews',
+      version: 1,
+      // Clear previously saved reviews once; new reviews persist normally.
+      migrate: () => ({ reviews: [], editingReview: null }),
+    }
   )
 );
