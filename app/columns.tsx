@@ -48,7 +48,11 @@ export const moviesColumns = (
       flex: 0.8,
       minWidth: 90,
       renderCell: ({ value }) => (
-        <Chip label={String(value).toUpperCase()} size="small" variant="outlined" />
+        <Chip
+          label={String(value).toUpperCase()}
+          size="small"
+          variant="outlined"
+        />
       ),
     },
     {
@@ -116,22 +120,29 @@ export const moviesColumns = (
         const id = params.row.id;
 
         const actions = [
-          <Tooltip title="Dettagli" placement="top" key={`details-movies-${id}`}>
+          <Tooltip
+            title="Dettagli"
+            placement="top"
+            key={`details-movies-${id}`}
+          >
             <GridActionsCellItem
               icon={<VisibilityIcon />}
               label="Dettagli"
               onClick={(event) => {
-                event.stopPropagation(); // evita anche l'onRowClick della riga
+                event.stopPropagation();
                 router.push(MOVIE_DETAILS(id));
               }}
             />
           </Tooltip>,
         ];
 
-        // Con recensione: matita per far capire che si può modificare.
         if (findReview(id)) {
           actions.push(
-            <Tooltip title="Modifica recensione" placement="top" key={`edit-review-${id}`}>
+            <Tooltip
+              title="Modifica recensione"
+              placement="top"
+              key={`edit-review-${id}`}
+            >
               <GridActionsCellItem
                 icon={<EditIcon />}
                 label="Modifica recensione"
