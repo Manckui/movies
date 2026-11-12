@@ -11,8 +11,6 @@ export const getMoviesList = async (
   params: QueryParamsObj
 ): Promise<IPaginatedList<IMovie>> => {
   const page = params.page || 1;
-  const pageSize = params.pageSize || 20;
-  const moviesPerRequest = 20;
   const title = String(params.title || "").trim();
   const year =
     params.year && params.year !== "all" ? String(params.year).trim() : "";
@@ -22,47 +20,37 @@ export const getMoviesList = async (
       : "";
   const hasTitleFilter = title.length > 0;
 
-  const pagesToFetch = Math.ceil(pageSize / moviesPerRequest);
+  const queryParams = hasTitleFilter
+    ? {
+        page,
+        query: title,
+        include_adult: "false",
+        ...(year ? { primary_release_year: year } : {}),
+      }
+    : {
+        page,
+        include_adult: "false",
+        sort_by: "popularity.desc",
+        ...(year ? { primary_release_year: year } : {}),
+        ...(language ? { with_original_language: language } : {}),
+      };
 
-  let allResults: IMovie[] = [];
-  let totalCount = 0;
+  const endpoint = hasTitleFilter ? "/search/movie" : "/discover/movie";
+  const res = await API.get<IMovieDto>(endpoint, queryParams);
+  let filteredResults = res.results;
 
-  for (let i = 0; i < pagesToFetch; i++) {
-    const queryParams = hasTitleFilter
-      ? {
-          page: page + i,
-          query: title,
-          include_adult: "false",
-          ...(year ? { primary_release_year: year } : {}),
-        }
-      : {
-          page: page + i,
-          include_adult: "false",
-          sort_by: "popularity.desc",
-          ...(year ? { primary_release_year: year } : {}),
-          ...(language ? { with_original_language: language } : {}),
-        };
-
-    const endpoint = hasTitleFilter ? "/search/movie" : "/discover/movie";
-    const res = await API.get<IMovieDto>(endpoint, queryParams);
-    let filteredResults = res.results;
-
-    if (hasTitleFilter && language) {
-      filteredResults = filteredResults.filter(
-        (movie) => movie.original_language === language
-      );
-    }
-
-    allResults = [...allResults, ...filteredResults];
-    totalCount = res.total_results;
-
-    if (allResults.length >= pageSize) break;
+  if (hasTitleFilter && language) {
+    filteredResults = filteredResults.filter(
+      (movie) => movie.original_language === language
+    );
   }
 
   const hasPostFilter = hasTitleFilter && !!language;
 
   return {
-    count: hasPostFilter ? allResults.length : totalCount || allResults.length,
-    items: allResults.slice(0, pageSize),
+    count: hasPostFilter
+      ? filteredResults.length
+      : res.total_results || filteredResults.length,
+    items: filteredResults,
   };
 };
