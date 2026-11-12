@@ -30,7 +30,7 @@ export const getMoviesList = async (
     : {
         page,
         include_adult: "false",
-        sort_by: "popularity.desc",
+        sort_by: "primary_release_date.desc",
         ...(year ? { primary_release_year: year } : {}),
         ...(language ? { with_original_language: language } : {}),
       };
