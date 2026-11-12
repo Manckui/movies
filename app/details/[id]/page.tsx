@@ -72,7 +72,7 @@ export default function Details() {
   ];
 
   const backdropUrl = movie?.backdrop_path
-    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+    ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
     : "/placeholder.jpg";
 
   const posterUrl = movie?.poster_path
@@ -158,6 +158,7 @@ export default function Details() {
               src={backdropUrl}
               alt={movie?.title || "Backdrop"}
               fill
+              sizes="(max-width: 900px) 100vw, 75vw"
               style={{ objectFit: "cover" }}
               priority
             />
@@ -199,6 +200,8 @@ export default function Details() {
                 alt={movie?.title || "Poster"}
                 width={441}
                 height={600}
+                sizes="(max-width: 899px) 220px, 441px"
+                priority
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </Box>
