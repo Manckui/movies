@@ -23,3 +23,12 @@ export const RATING_LABELS: Record<number, string> = {
   4: "Ottimo",
   5: "Capolavoro",
 };
+
+export const formatMoney = (value?: number) =>
+  value
+    ? value.toLocaleString("it-IT", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      })
+    : "—";

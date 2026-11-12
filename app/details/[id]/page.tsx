@@ -5,7 +5,7 @@ import { FrontOfficePage } from "@/components";
 import { useReviewsStore } from "@/hooks";
 import { REVIEW, ROOT } from "@/routes/paths";
 import { getMovieDetails, IMovieDetails } from "@/services";
-import { formatDate, RATING_LABELS, tmdbImage } from "@/utils";
+import { formatDate, formatMoney, RATING_LABELS, tmdbImage } from "@/utils";
 import {
   Alert,
   alpha,
@@ -38,15 +38,6 @@ interface IReviewFormValues {
   rating: number;
   text: string;
 }
-
-const formatMoney = (value?: number) =>
-  value
-    ? value.toLocaleString("it-IT", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      })
-    : "—";
 
 // Riquadro informativo (budget, incassi, ...).
 const InfoTile = ({
@@ -187,10 +178,23 @@ export default function Details() {
 
       {isLoading ? (
         <Stack gap={3}>
-          <Skeleton variant="rounded" width="100%" height={420} sx={{ borderRadius: "24px" }} />
+          <Skeleton
+            variant="rounded"
+            width="100%"
+            height={420}
+            sx={{ borderRadius: "24px" }}
+          />
           <Stack direction={{ xs: "column", md: "row" }} gap={3}>
-            <Skeleton variant="rounded" height={260} sx={{ flex: 1.25, borderRadius: "20px" }} />
-            <Skeleton variant="rounded" height={260} sx={{ flex: 1, borderRadius: "20px" }} />
+            <Skeleton
+              variant="rounded"
+              height={260}
+              sx={{ flex: 1.25, borderRadius: "20px" }}
+            />
+            <Skeleton
+              variant="rounded"
+              height={260}
+              sx={{ flex: 1, borderRadius: "20px" }}
+            />
           </Stack>
         </Stack>
       ) : fetchError || !movie ? (
@@ -275,7 +279,10 @@ export default function Details() {
                   sx={{ typography: { xs: "h3", md: "displayLarge" } }}
                 >
                   {movie.title}{" "}
-                  <Box component="span" sx={{ fontWeight: 400, color: "grey.400" }}>
+                  <Box
+                    component="span"
+                    sx={{ fontWeight: 400, color: "grey.400" }}
+                  >
                     ({movie.release_date?.split("-")[0]})
                   </Box>
                 </Typography>
@@ -285,7 +292,13 @@ export default function Details() {
                 </Typography>
 
                 {movie.tagline && (
-                  <Typography sx={{ fontStyle: "italic", color: "grey.300", fontSize: 16 }}>
+                  <Typography
+                    sx={{
+                      fontStyle: "italic",
+                      color: "grey.300",
+                      fontSize: 16,
+                    }}
+                  >
                     “{movie.tagline}”
                   </Typography>
                 )}
@@ -337,13 +350,20 @@ export default function Details() {
           </Box>
 
           {/* Colonne della stessa altezza: la card recensione segue le due card a sinistra. */}
-          <Stack direction={{ xs: "column", md: "row" }} gap={3} alignItems="stretch">
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            gap={3}
+            alignItems="stretch"
+          >
             <Stack gap={3} sx={{ flex: 1.25, width: "100%" }}>
               <Card sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ mb: 1.5 }}>
                   Trama
                 </Typography>
-                <Typography color="grey.400" sx={{ fontSize: 15, lineHeight: "26px" }}>
+                <Typography
+                  color="grey.400"
+                  sx={{ fontSize: 15, lineHeight: "26px" }}
+                >
                   {movie.overview || "Trama non disponibile."}
                 </Typography>
               </Card>
@@ -359,10 +379,26 @@ export default function Details() {
                     gap: 2,
                   }}
                 >
-                  <InfoTile label="Budget" value={formatMoney(movie.budget)} icon={PaidIcon} />
-                  <InfoTile label="Incassi" value={formatMoney(movie.revenue)} icon={TrendingUpIcon} />
-                  <InfoTile label="Durata" value={movie.runtime ? `${movie.runtime} minuti` : "—"} icon={ScheduleIcon} />
-                  <InfoTile label="Lingua originale" value={movie.original_language.toUpperCase()} icon={LanguageIcon} />
+                  <InfoTile
+                    label="Budget"
+                    value={formatMoney(movie.budget)}
+                    icon={PaidIcon}
+                  />
+                  <InfoTile
+                    label="Incassi"
+                    value={formatMoney(movie.revenue)}
+                    icon={TrendingUpIcon}
+                  />
+                  <InfoTile
+                    label="Durata"
+                    value={movie.runtime ? `${movie.runtime} minuti` : "—"}
+                    icon={ScheduleIcon}
+                  />
+                  <InfoTile
+                    label="Lingua originale"
+                    value={movie.original_language.toUpperCase()}
+                    icon={LanguageIcon}
+                  />
                 </Box>
               </Card>
             </Stack>
@@ -376,24 +412,46 @@ export default function Details() {
                 display: "flex",
                 flexDirection: "column",
                 // Il form riempie la card: i pulsanti restano in fondo.
-                "& > form": { flex: 1, display: "flex", flexDirection: "column" },
+                "& > form": {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                },
               }}
             >
               <FormProvider
                 methods={reviewMethods}
                 onSubmit={reviewMethods.handleSubmit(onSubmitReview)}
               >
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Typography variant="h6">La tua recensione</Typography>
                   {existingReview && (
-                    <Chip icon={<CheckCircleIcon />} label="Salvata" size="small" color="success" />
+                    <Chip
+                      icon={<CheckCircleIcon />}
+                      label="Salvata"
+                      size="small"
+                      color="success"
+                    />
                   )}
                 </Stack>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 3 }}
+                >
                   Dai un voto da 1 a 5 e racconta cosa ne pensi.
                 </Typography>
 
-                <Stack direction="row" alignItems="center" gap={1.75} sx={{ mb: 3.5 }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  gap={1.75}
+                  sx={{ mb: 3.5 }}
+                >
                   <RHFRating
                     name="rating"
                     label="Voto *"
@@ -419,16 +477,26 @@ export default function Details() {
                   multiline
                   minRows={5}
                   fullWidth
-                  rules={{ required: "Il testo della recensione è obbligatorio" }}
+                  rules={{
+                    required: "Il testo della recensione è obbligatorio",
+                  }}
                 />
 
-                <Stack direction="row" justifyContent="flex-end" sx={{ mt: "auto", pt: 3.5 }}>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-end"
+                  sx={{ mt: "auto", pt: 3.5 }}
+                >
                   <Button
                     type="submit"
                     variant="contained"
-                    startIcon={existingReview ? <EditIcon /> : <CheckCircleIcon />}
+                    startIcon={
+                      existingReview ? <EditIcon /> : <CheckCircleIcon />
+                    }
                   >
-                    {existingReview ? "Modifica recensione" : "Salva recensione"}
+                    {existingReview
+                      ? "Modifica recensione"
+                      : "Salva recensione"}
                   </Button>
                 </Stack>
               </FormProvider>
