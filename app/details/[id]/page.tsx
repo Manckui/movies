@@ -34,11 +34,13 @@ export default function Details() {
   const [fetchError, setFetchError] = useState<string>();
   const [showSavedToast, setShowSavedToast] = useState(false);
 
+  // Recensioni  e form.
   const { reviews, saveReview } = useReviewsStore();
   const reviewMethods = useForm<IReviewFormValues>({
     defaultValues: { rating: 0, text: "" },
   });
 
+  // Precompila la recensione esistente.
   useEffect(() => {
     const existingReview = reviews.find((r) => r.movieId === Number(id));
     reviewMethods.reset({
@@ -71,6 +73,7 @@ export default function Details() {
     { text: movie?.title || "Dettaglio Movie" },
   ];
 
+  // Immagini con riserva.
   const backdropUrl = movie?.backdrop_path
     ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
     : "/placeholder.jpg";
@@ -79,10 +82,12 @@ export default function Details() {
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : "/placeholder.jpg";
 
+  // Sito ufficiale o IMDb.
   const websiteUrl =
     movie?.homepage ||
     (movie?.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : "");
 
+  // Salva la recensione e apre la lista.
   const onSubmitReview = (data: IReviewFormValues) => {
     if (!movie) return;
 
@@ -200,10 +205,19 @@ export default function Details() {
 
             <Stack
               gap={2}
-              sx={{ flex: 1, width: "100%", color: { xs: "#212B36", md: "#fff" } }}
+              sx={{
+                flex: 1,
+                width: "100%",
+                color: { xs: "#212B36", md: "#fff" },
+              }}
             >
               <Box>
-                <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+                <Stack
+                  direction="row"
+                  gap={1}
+                  alignItems="center"
+                  flexWrap="wrap"
+                >
                   <Typography variant="h3">{movie?.title}</Typography>
                   <Typography variant="h3" color="text.secondary">
                     {movie?.release_date?.split("-")[0]}

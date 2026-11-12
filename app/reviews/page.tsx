@@ -15,12 +15,14 @@ export default function Reviews() {
   const router = useRouter();
   const { reviews } = useReviewsStore();
 
+  // Media dei voti personali.
   const averageRating = useMemo(() => {
     if (!reviews.length) return 0;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return Math.round((sum / reviews.length) * 10) / 10;
   }, [reviews]);
 
+  // Adatta le recensioni alla tabella.
   const rows = useMemo(
     () =>
       reviews.map((review) => ({
